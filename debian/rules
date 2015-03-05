@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 # Uncomment this to turn on verbose mode.
 # export DH_VERBOSE=1
+export LD_LIBRARY_PATH=$(CURDIR)/lib
 
 configure: configure-stamp
 configure-stamp:
