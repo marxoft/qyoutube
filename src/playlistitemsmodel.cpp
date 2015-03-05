@@ -123,21 +123,15 @@ public:
         Q_Q(PlaylistItemsModel);
     
         if (request->status() == PlaylistItemsRequest::Ready) {
-            QVariantMap result = request->result().toMap();
-        
-            if (!result.isEmpty()) {
-                QString id = result.value("id").toString();
+            if (!delId.isEmpty()) {
+                QModelIndexList indexes = q->match(QModelIndex(), PlaylistItemsModel::IdRole, delId, 1, Qt::MatchExactly);
                 
-                if (!id.isEmpty()) {
-                    QModelIndexList indexes = q->match(QModelIndex(), PlaylistItemsModel::IdRole, id, 1, Qt::MatchExactly);
-                    
-                    if (!indexes.isEmpty()) {
-                        QModelIndex index = indexes.first();
-                        q->beginRemoveRows(QModelIndex(), index.row(), index.row());
-                        items.removeAt(index.row());
-                        q->endRemoveRows();
-                        emit q->countChanged();
-                    }
+                if (!indexes.isEmpty()) {
+                    QModelIndex index = indexes.first();
+                    q->beginRemoveRows(QModelIndex(), index.row(), index.row());
+                    items.removeAt(index.row());
+                    q->endRemoveRows();
+                    emit q->countChanged();
                 }
             }
         }
@@ -152,6 +146,8 @@ public:
     QStringList part;
     QVariantMap filters;
     QVariantMap params;
+    
+    QString delId;
         
     QString previousPageToken;
     QString nextPageToken;
@@ -537,8 +533,9 @@ void PlaylistItemsModel::update(int row, QVariantMap resource, const QStringList
 void PlaylistItemsModel::del(int row) {
     if (status() != PlaylistItemsRequest::Loading) {
         Q_D(PlaylistItemsModel);
+        d->delId = data(index(row), IdRole).toString();
         connect(d->request, SIGNAL(finished()), this, SLOT(_q_onDelRequestFinished()));
-        d->request->del(data(index(row), IdRole).toString());
+        d->request->del(d->delId);
         emit statusChanged();
     }
 }

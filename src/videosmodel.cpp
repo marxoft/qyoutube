@@ -100,21 +100,15 @@ public:
         Q_Q(VideosModel);
     
         if (request->status() == VideosRequest::Ready) {
-            QVariantMap result = request->result().toMap();
-        
-            if (!result.isEmpty()) {
-                QString id = result.value("id").toString();
+            if (!delId.isEmpty()) {
+                QModelIndexList indexes = q->match(QModelIndex(), VideosModel::IdRole, delId, 1, Qt::MatchExactly);
                 
-                if (!id.isEmpty()) {
-                    QModelIndexList indexes = q->match(QModelIndex(), VideosModel::IdRole, id, 1, Qt::MatchExactly);
-                    
-                    if (!indexes.isEmpty()) {
-                        QModelIndex index = indexes.first();
-                        q->beginRemoveRows(QModelIndex(), index.row(), index.row());
-                        items.removeAt(index.row());
-                        q->endRemoveRows();
-                        emit q->countChanged();
-                    }
+                if (!indexes.isEmpty()) {
+                    QModelIndex index = indexes.first();
+                    q->beginRemoveRows(QModelIndex(), index.row(), index.row());
+                    items.removeAt(index.row());
+                    q->endRemoveRows();
+                    emit q->countChanged();
                 }
             }
         }
@@ -129,6 +123,8 @@ public:
     QStringList part;
     QVariantMap filters;
     QVariantMap params;
+    
+    QString delId;
         
     QString previousPageToken;
     QString nextPageToken;
@@ -561,8 +557,9 @@ void VideosModel::rate(int row, const QString &rating) {
 void VideosModel::del(int row) {
     if (status() != VideosRequest::Loading) {
         Q_D(VideosModel);
+        d->delId = data(index(row), IdRole).toString();
         connect(d->request, SIGNAL(finished()), this, SLOT(_q_onDelRequestFinished()));
-        d->request->del(data(index(row), IdRole).toString());
+        d->request->del(d->delId);
         emit statusChanged();
     }
 }
