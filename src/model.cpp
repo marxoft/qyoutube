@@ -316,7 +316,9 @@ void Model::clear() {
     Q_D(Model);
     
     if (!d->items.isEmpty()) {
+        beginResetModel();
         d->items.clear();
+        endResetModel();
         emit countChanged();
     }
 }
