@@ -17,6 +17,7 @@
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
+#include <QtGlobal>
 #if QT_VERSION >= 0x050000
 #include <QQmlExtensionPlugin>
 #else
@@ -29,6 +30,8 @@ namespace QYouTube {
 class Plugin : public QQmlExtensionPlugin
 {
     Q_OBJECT
+    
+    Q_PLUGIN_METADATA(IID "org.qyoutube.QYouTubeQmlPlugin")
 
 public:
     void registerTypes(const char *uri);

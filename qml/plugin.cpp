@@ -87,5 +87,6 @@ QML_DECLARE_TYPE(QYouTube::VideoCategoriesModel)
 QML_DECLARE_TYPE(QYouTube::VideoCategoriesRequest)
 QML_DECLARE_TYPE(QYouTube::VideosModel)
 QML_DECLARE_TYPE(QYouTube::VideosRequest)
-
+#if QT_VERSION < 0x050000
 Q_EXPORT_PLUGIN2(qyoutubeplugin, QYouTube::Plugin)
+#endif

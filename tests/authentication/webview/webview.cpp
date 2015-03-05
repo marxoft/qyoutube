@@ -18,6 +18,9 @@
 #include "urls.h"
 #include <QSettings>
 #include <QMessageBox>
+#if QT_VERSION >= 0x050000
+#include <QUrlQuery>
+#endif
 #ifdef QYOUTUBE_DEBUG
 #include <QDebug>
 #endif
@@ -37,7 +40,7 @@ WebView::WebView(QWidget *parent) :
 #if QT_VERSION >= 0x050000
     QUrlQuery query(u);
     query.addQueryItem("client_id", request.clientId());
-    query.addQueryItem("redirect_uri", REDIRECT_URL);
+    query.addQueryItem("redirect_uri", REDIRECT_URI);
     query.addQueryItem("response_type", "code");
     query.addQueryItem("scope", READ_ONLY_SCOPE);
     query.addQueryItem("access_type", "offline");

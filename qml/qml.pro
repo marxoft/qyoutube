@@ -1,10 +1,15 @@
 TEMPLATE = lib
 TARGET = qyoutubeplugin
-QT += declarative
 CONFIG += qt plugin link_prl
 LIBS += -L../lib -lqyoutube
 PKGCONFIG = libqyoutube
 INCLUDEPATH += ../src
+
+lessThan(QT_MAJOR_VERSION, 5) {
+    QT += declarative
+} else {
+    QT += qml
+}
 
 HEADERS += \
     plugin.h
