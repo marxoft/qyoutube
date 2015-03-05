@@ -1,0 +1,27 @@
+Source: qyoutube
+Section: libs
+Priority: optional
+Maintainer: Stuart Howarth <showarth@marxoft.co.uk>
+Homepage: http://marxoft.co.uk/projects/qyoutube
+Build-Depends: debhelper (>= 5), libqt4-dev
+
+Package: qyoutube
+Architecture: armel
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: A Qt/C++ library to access the YouTube Data API.
+ QYouTube provides a series of request classes and data models enabling read/write access to YouTube Data API resources. 
+ The library also supports authentication and retrieval of video streams and subtitles. Full documentation is available 
+ at http://marxoft.co.uk/doc/qyoutube
+
+Package: qyoutube-qml
+Architecture: armel
+Depends: qyoutube
+Description: A QML module to access the YouTube Data API.
+ QYouTube-QML provides a series of QML elements enabling read/write access to YouTube Data API resources. The module 
+ also supports authentication and retrieval of video streams and subtitles. Full documentation is available at 
+ http://marxoft.co.uk/doc/qyoutube
+ 
+Package: qyoutube-dev
+Architecture: armel
+Depends: qyoutube
+Description: Header files for the QYouTube library

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+if [ ! -e /usr/lib/libqyoutube.so.1.0.0 ]
+    then
+        ln -s /opt/lib/libqyoutube.so.1.0.0 /usr/lib/libqyoutube.so.1.0.0
+        ln -s /usr/lib/libqyoutube.so.1.0.0 /usr/lib/libqyoutube.so
+        ln -s /usr/lib/libqyoutube.so.1.0.0 /usr/lib/libqyoutube.so.1
+        ln -s /usr/lib/libqyoutube.so.1.0.0 /usr/lib/libqyoutube.so.1.0
+fi
+
+if [ ! -e  /usr/lib/qt4/imports/QYouTube ]
+    then
+        ln -s /opt/lib/qt4/imports/QYouTube/ /usr/lib/qt4/imports/
+fi
+
+exit 0

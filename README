@@ -1,0 +1,9 @@
+QYouTube
+===================
+
+QYouTube is a Qt/C++ library and QML module providing access to the YouTube Data API.
+
+QYouTube provides a series of request classes and data models enabling read/write access to YouTube Data API resources. 
+The library also supports authentication and retrieval of video streams and subtitles.
+ 
+Full documentation is available at http://marxoft.co.uk/doc/qyoutube
