@@ -24,15 +24,6 @@ int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
     app.setOrganizationName("QYouTube");
     app.setApplicationName("QYouTube");
-    
-    QStringList args = app.arguments();
-    
-    if (args.size() < 2) {
-        qWarning() << "Usage: authentication-device SCOPES";
-        return 0;
-    }
-    
-    args.removeFirst();
         
     QSettings settings;
 
@@ -40,7 +31,8 @@ int main(int argc, char *argv[]) {
     request.setClientId(settings.value("Authentication/clientId").toString());
     request.setClientSecret(settings.value("Authentication/clientSecret").toString());
     request.setApiKey(settings.value("Authentication/apiKey").toString());
-    request.requestAuthorizationCode(args);
+    request.setScopes(settings.value("Authentication/scopes").toStringList());
+    request.requestAuthorizationCode();
     QObject::connect(&request, SIGNAL(finished()), &app, SLOT(quit()));
 
     return app.exec();

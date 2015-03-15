@@ -32,7 +32,7 @@ public:
     {
     }
     
-    void onReplyFinished() {
+    void _q_onReplyFinished() {
         if (!reply) {
             return;
         }
@@ -88,7 +88,9 @@ public:
             u.addQueryItem("v", reply->request().url().queryItemValue("v"));
             u.addQueryItem("lang", code);
 #endif
-            sub["language"] = trackEl.attribute("lang");
+            sub["id"] = trackEl.attribute("id");
+            sub["originalLanguage"] = trackEl.attribute("lang_original");
+            sub["translatedLanguage"] = trackEl.attribute("lang_translated");
             sub["languageCode"] = code;
             sub["url"] = u;
             subs << sub;
@@ -108,7 +110,6 @@ public:
     \class SubtitlesRequest
     \brief Handles requests for video subtitles
     
-    \ingroup subtitles
     \ingroup requests
     
     The SubtitlesRequest class is used for requesting a list of subtitles for a YouTube video.
@@ -176,13 +177,17 @@ void SubtitlesRequest::list(const QString &id) {
     QUrl u(SUBTITLES_URL);
 #if QT_VERSION >= 0x050000
     QUrlQuery query(u);
+    query.addQueryItem("hl", "en");
+    query.addQueryItem("type", "list");
     query.addQueryItem("v", id);
     u.setQuery(query);
 #else
+    u.addQueryItem("hl", "en");
+    u.addQueryItem("type", "list");
     u.addQueryItem("v", id);
 #endif
     setUrl(u);
-    get();
+    get(false);
 }
 
 }

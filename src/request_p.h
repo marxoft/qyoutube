@@ -46,7 +46,16 @@ inline void addUrlQueryItems(QUrlQuery *query, const QVariantMap &map) {
     
     while (iterator.hasNext()) {
         iterator.next();
-        value = QtJson::Json::serialize(iterator.value(), ok);
+        
+        switch (iterator.value().type()) {
+        case QVariant::String:
+        case QVariant::ByteArray:
+            value = iterator.value().toByteArray();
+            break;
+        default:
+            value = QtJson::Json::serialize(iterator.value(), ok);
+            break;
+        }
         
         if (ok) {
             query->addQueryItem(iterator.key(), value);
@@ -64,7 +73,16 @@ inline void addUrlQueryItems(QUrl *url, const QVariantMap &map) {
     
     while (iterator.hasNext()) {
         iterator.next();
-        value = QtJson::Json::serialize(iterator.value(), ok);
+        
+        switch (iterator.value().type()) {
+        case QVariant::String:
+        case QVariant::ByteArray:
+            value = iterator.value().toByteArray();
+            break;
+        default:
+            value = QtJson::Json::serialize(iterator.value(), ok);
+            break;
+        }
         
         if (ok) {
             url->addQueryItem(iterator.key(), value);
@@ -83,10 +101,50 @@ inline void addRequestHeaders(QNetworkRequest *request, const QVariantMap &map) 
     
     while (iterator.hasNext()) {
         iterator.next();
-        value = QtJson::Json::serialize(iterator.value(), ok);
+        
+        switch (iterator.value().type()) {
+        case QVariant::String:
+        case QVariant::ByteArray:
+            value = iterator.value().toByteArray();
+            break;
+        default:
+            value = QtJson::Json::serialize(iterator.value(), ok);
+            break;
+        }
         
         if (ok) {
             request->setRawHeader(iterator.key().toUtf8(), value);
+        }
+    }
+}
+
+inline void addPostBody(QString *body, const QVariantMap &map) {
+#ifdef QVIMEO_DEBUG
+    qDebug() << "addPostBody:" << body << map;
+#endif
+    QMapIterator<QString, QVariant> iterator(map);
+    QByteArray value;
+    bool ok;
+    
+    while (iterator.hasNext()) {
+        iterator.next();
+        
+        switch (iterator.value().type()) {
+        case QVariant::String:
+        case QVariant::ByteArray:
+            value = iterator.value().toByteArray();
+            break;
+        default:
+            value = QtJson::Json::serialize(iterator.value(), ok);
+            break;
+        }
+        
+        if (ok) {
+            body->append(iterator.key() + "=" + value);
+            
+            if (iterator.hasNext()) {
+                body->append("&");
+            }
         }
     }
 }

@@ -29,17 +29,23 @@ class QYOUTUBESHARED_EXPORT AuthenticationRequest : public Request
 {
     Q_OBJECT
     
+    Q_PROPERTY(QStringList scopes READ scopes WRITE setScopes NOTIFY scopesChanged)
+    
 public:
     explicit AuthenticationRequest(QObject *parent = 0);
+    
+    QStringList scopes() const;
+    void setScopes(const QStringList &s);
     
 public Q_SLOTS:
     void exchangeCodeForAccessToken(const QString &code);
     
-    void requestAuthorizationCode(const QStringList &scopes);
+    void requestAuthorizationCode();
     
-    void revokeAccessToken(const QString &token);
+    void revokeAccessToken();
     
 Q_SIGNALS:
+    void scopesChanged();
     void authorizationCodeReady(const QVariantMap &code);
 
 private:

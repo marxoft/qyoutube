@@ -15,18 +15,10 @@
  */
 
 #include "webview.h"
-#if QT_VERSION >= 0x050000
-#include <QGuiApplication>
-#else
 #include <QApplication>
-#endif
 
 int main(int argc, char *argv[]) {
-#if QT_VERSION >= 0x050000
-    QGuiApplication app(argc, argv);
-#else
     QApplication app(argc, argv);
-#endif
     app.setOrganizationName("QYouTube");
     app.setApplicationName("QYouTube");
     

@@ -151,6 +151,8 @@ public:
     
     AuthRequest authRequest;
     
+    QStringList scopes;
+    
     int deviceExpiry;
     int deviceInterval;
     
@@ -165,7 +167,6 @@ public:
     \class AuthenticationRequest
     \brief Handles OAuth 2.0 authentication requests.
     
-    \ingroup authentication
     \ingroup requests
     
     The AuthenticationRequest class is used for obtaining and revoking access tokens for use with the YouTube Data API. 
@@ -177,6 +178,26 @@ public:
 AuthenticationRequest::AuthenticationRequest(QObject *parent) :
     Request(*new AuthenticationRequestPrivate(this), parent)
 {
+}
+
+/*!
+    \property QStringList AuthenticationRequest::scopes
+    \brief The list of scopes for which to request permission.
+*/
+QStringList AuthenticationRequest::scopes() const {
+    Q_D(const AuthenticationRequest);
+    
+    return d->scopes;
+}
+
+void AuthenticationRequest::setScopes(const QStringList &scopes) {
+    Q_D(AuthenticationRequest);
+    
+    d->scopes = scopes;
+    emit scopesChanged();
+#if QYOUTUBE_DEBUG
+    qDebug() << "AuthenticationRequest::setScopes" << scopes;
+#endif
 }
 
 /*!
@@ -201,7 +222,7 @@ void AuthenticationRequest::exchangeCodeForAccessToken(const QString &code) {
 */
 
 /*!
-    \brief Requests a device authorization code for the specified scopes.
+    \brief Requests a device authorization code for the current scopes.
     
     This method is used when using the <a target="_blank" 
     href="https://developers.google.com/youtube/v3/guides/authentication#devices">devices flow</a>.
@@ -236,27 +257,27 @@ void AuthenticationRequest::exchangeCodeForAccessToken(const QString &code) {
         </tr>
     </table>
 */
-void AuthenticationRequest::requestAuthorizationCode(const QStringList &scopes) {
+void AuthenticationRequest::requestAuthorizationCode() {
     Q_D(AuthenticationRequest);
     d->authRequest = AuthenticationRequestPrivate::DeviceCode;
     setUrl(QUrl(DEVICE_CODE_URL));
-    setData(QString("scope=" + scopes.join(" ") + "&client_id=" + clientId()));
+    setData(QString("scope=" + scopes().join(" ") + "&client_id=" + clientId()));
     post();
 }
 
 /*!
-    \brief Revokes YouTube Data API access for the specified access token.
+    \brief Revokes YouTube Data API access for the current access token.
 */
-void AuthenticationRequest::revokeAccessToken(const QString &token) {
+void AuthenticationRequest::revokeAccessToken() {
     Q_D(AuthenticationRequest);
     d->authRequest = AuthenticationRequestPrivate::RevokeToken;
     QUrl u(REVOKE_TOKEN_URL);
 #if QT_VERSION >= 0x050000
     QUrlQuery query(u);
-    query.addQueryItem("token", token);
+    query.addQueryItem("token", accessToken());
     u.setQuery(query);
 #else
-    u.addQueryItem("token", token);
+    u.addQueryItem("token", accessToken());
 #endif
     setUrl(u);
     get(false);

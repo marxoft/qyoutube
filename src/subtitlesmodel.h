@@ -34,8 +34,10 @@ class QYOUTUBESHARED_EXPORT SubtitlesModel : public Model
                 
 public:
     enum Roles {
-        LanguageRole = Qt::UserRole + 1,
+        IdRole = Qt::UserRole + 1,
         LanguageCodeRole,
+        OriginalLanguageRole,
+        TranslatedLanguageRole,
         UrlRole
     };
         

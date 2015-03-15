@@ -17,7 +17,6 @@
 #include "subtitlesrequest.h"
 #include <QCoreApplication>
 #include <QStringList>
-#include <QSettings>
 #include <QDebug>
 
 int main(int argc, char *argv[]) {
@@ -34,14 +33,7 @@ int main(int argc, char *argv[]) {
     
     args.removeFirst();
 
-    QSettings settings;
-
     QYouTube::SubtitlesRequest request;
-    request.setClientId(settings.value("Authentication/clientId").toString());
-    request.setClientSecret(settings.value("Authentication/clientSecret").toString());
-    request.setApiKey(settings.value("Authentication/apiKey").toString());
-    request.setAccessToken(settings.value("Authentication/accessToken").toString());
-    request.setRefreshToken(settings.value("Authentication/refreshToken").toString());
     request.list(args.takeFirst());
     QObject::connect(&request, SIGNAL(finished()), &app, SLOT(quit()));
 

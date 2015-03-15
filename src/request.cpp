@@ -209,6 +209,9 @@ void Request::setUrl(const QUrl &url) {
         d->url = url;
         emit urlChanged();
     }
+#ifdef QYOUTUBE_DEBUG
+    qDebug() << "QYouTube::Request::setUrl" << url;
+#endif
 }
 
 /*!
@@ -231,10 +234,9 @@ void Request::setHeaders(const QVariantMap &headers) {
     
     d->headers = headers;
     emit headersChanged();
-}
-
-void Request::resetHeaders() {
-    setHeaders(QVariantMap());
+#ifdef QYOUTUBE_DEBUG
+    qDebug() << "QYouTube::Request::setHeaders" << headers;
+#endif
 }
 
 /*!
@@ -259,10 +261,9 @@ void Request::setData(const QVariant &data) {
         d->data = data;
         emit dataChanged();
     }
-}
-
-void Request::resetData() {
-    setData(QVariant());
+#ifdef QYOUTUBE_DEBUG
+    qDebug() << "QYouTube::Request::setData" << data;
+#endif
 }
 
 /*!
@@ -542,6 +543,9 @@ void Request::setNetworkAccessManager(QNetworkAccessManager *manager) {
     
     d->ownNetworkAccessManager = false;
     d->manager = manager;
+#ifdef QYOUTUBE_DEBUG
+    qDebug() << "QYouTube::Request::setNetworkAccessManager" << manager;
+#endif
 }
 
 /*!
@@ -562,7 +566,9 @@ void Request::head(bool authRequired) {
     if (d->reply) {
         delete d->reply;
     }
-    
+#ifdef QYOUTUBE_DEBUG
+    qDebug() << "QYouTube::Request::head" << d->url;
+#endif
     d->reply = d->networkAccessManager()->head(d->buildRequest(authRequired));
     connect(d->reply, SIGNAL(finished()), this, SLOT(_q_onReplyFinished()));
 }
@@ -585,7 +591,9 @@ void Request::get(bool authRequired) {
     if (d->reply) {
         delete d->reply;
     }
-    
+#ifdef QYOUTUBE_DEBUG
+    qDebug() << "QYouTube::Request::get" << d->url;
+#endif
     d->reply = d->networkAccessManager()->get(d->buildRequest(authRequired));
     connect(d->reply, SIGNAL(finished()), this, SLOT(_q_onReplyFinished()));
 }
@@ -613,9 +621,20 @@ void Request::post(bool authRequired) {
         delete d->reply;
     }
     
-    bool ok;
-    QByteArray data = QtJson::Json::serialize(d->data, ok);
+    bool ok = true;
+    QByteArray data;
     
+    switch (d->data.type()) {
+    case QVariant::String:
+    case QVariant::ByteArray:
+        data = d->data.toByteArray();
+        break;
+    default:
+        data = QtJson::Json::serialize(d->data, ok);
+    }
+#ifdef QYOUTUBE_DEBUG
+    qDebug() << "QYouTube::Request::post" << d->url << data;
+#endif
     if (ok) {
         d->setStatus(Loading);        
         d->reply = d->networkAccessManager()->post(d->buildRequest(authRequired), data);
@@ -652,9 +671,20 @@ void Request::put(bool authRequired) {
         delete d->reply;
     }
     
-    bool ok;
-    QByteArray data = QtJson::Json::serialize(d->data, ok);
+    bool ok = true;
+    QByteArray data;
     
+    switch (d->data.type()) {
+    case QVariant::String:
+    case QVariant::ByteArray:
+        data = d->data.toByteArray();
+        break;
+    default:
+        data = QtJson::Json::serialize(d->data, ok);
+    }
+#ifdef QYOUTUBE_DEBUG
+    qDebug() << "QYouTube::Request::put" << d->url << data;
+#endif
     if (ok) {
         d->setStatus(Loading);        
         d->reply = d->networkAccessManager()->put(d->buildRequest(authRequired), data);
@@ -686,7 +716,9 @@ void Request::deleteResource(bool authRequired) {
     if (d->reply) {
         delete d->reply;
     }
-    
+#ifdef QYOUTUBE_DEBUG
+    qDebug() << "QYouTube::Request::deleteResource" << d->url;
+#endif
     d->reply = d->networkAccessManager()->deleteResource(d->buildRequest(authRequired));
     connect(d->reply, SIGNAL(finished()), this, SLOT(_q_onReplyFinished()));
 }
@@ -733,7 +765,7 @@ void RequestPrivate::setOperation(Request::Operation op) {
         emit q->operationChanged();
     }
 #ifdef QYOUTUBE_DEBUG
-    qDebug() << "QYouTube::RequestPrivate::setOperation " << Request::Operation(op);
+    qDebug() << "QYouTube::RequestPrivate::setOperation" << Request::Operation(op);
 #endif
 }
 
@@ -744,28 +776,28 @@ void RequestPrivate::setStatus(Request::Status s) {
         emit q->statusChanged();
     }
 #ifdef QYOUTUBE_DEBUG
-    qDebug() << "QYouTube::RequestPrivate::setStatus " << Request::Status(s);
+    qDebug() << "QYouTube::RequestPrivate::setStatus" << Request::Status(s);
 #endif
 }
 
 void RequestPrivate::setError(Request::Error e) {
     error = e;
 #ifdef QYOUTUBE_DEBUG
-    qDebug() << "QYouTube::RequestPrivate::setError " << Request::Error(e);
+    qDebug() << "QYouTube::RequestPrivate::setError" << Request::Error(e);
 #endif
 }
 
 void RequestPrivate::setErrorString(const QString &es) {
     errorString = es;
 #ifdef QYOUTUBE_DEBUG
-    qDebug() << "QYouTube::RequestPrivate::setErrorString " << es;
+    qDebug() << "QYouTube::RequestPrivate::setErrorString" << es;
 #endif
 }
 
 void RequestPrivate::setResult(const QVariant &res) {
     result = res;
 #ifdef QYOUTUBE_DEBUG
-    qDebug() << "QYouTube::RequestPrivate::setResult " << res;
+    qDebug() << "QYouTube::RequestPrivate::setResult" << res;
 #endif
 }
 
@@ -798,14 +830,24 @@ QNetworkRequest RequestPrivate::buildRequest(QUrl u, bool authRequired) {
 #endif
     }
 #ifdef QYOUTUBE_DEBUG
-    qDebug() << "QYouTube::RequestPrivate::buildRequest " << u;
+    qDebug() << "QYouTube::RequestPrivate::buildRequest" << u;
 #endif
     QNetworkRequest request(u);
     
     switch (operation) {
     case Request::PostOperation:
     case Request::PutOperation:
-        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+        switch (data.type()) {
+        case QVariant::Map:
+        case QVariant::List:
+        case QVariant::StringList:
+            request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+            break;
+        default:
+            request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+            break;
+        }
+        
         break;
     default:
         break;
@@ -836,6 +878,7 @@ void RequestPrivate::refreshAccessToken() {
     
     QUrl tokenUrl(TOKEN_URL);
     QNetworkRequest request(tokenUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     QByteArray body("client_id=" + clientId.toUtf8() +
                     "&client_secret=" + clientSecret.toUtf8() +
                     "&refresh_token=" + refreshToken.toUtf8() +
@@ -933,8 +976,9 @@ void RequestPrivate::_q_onReplyFinished() {
         }
     }
     
-    bool ok;
-    setResult(QtJson::Json::parse(reply->readAll(), ok));
+    bool ok = true;
+    QString response(reply->readAll());
+    setResult(response.isEmpty() ? response : QtJson::Json::parse(response, ok));
     
     switch (reply->error()) {
     case QNetworkReply::NoError:

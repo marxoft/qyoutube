@@ -68,7 +68,6 @@ public:
     \class StreamsModel
     \brief A list model for displaying list of streams for a YouTube video.
     
-    \ingroup streams
     \ingroup models
     
     The StreamsModel is a list model used for displaying YouTube video streams in a list view. 

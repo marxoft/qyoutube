@@ -14,20 +14,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "authenticationrequest.h"
+#include "resourcesrequest.h"
+#include "json.h"
 #include <QCoreApplication>
+#include <QStringList>
 #include <QSettings>
+#include <QDebug>
 
 int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
     app.setOrganizationName("QYouTube");
     app.setApplicationName("QYouTube");
+    
+    QStringList args = app.arguments();
+    
+    if (args.size() < 3) {
+        qWarning() << "Usage: resources-list RESOURCEPATH PART [FILTERS] [PARAMS]";
+        return 0;
+    }
+    
+    args.removeFirst();
+    
+    QString resourcePath = args.takeFirst();
+    QStringList part = QtJson::Json::parse(args.takeFirst()).toStringList();
+    QVariantMap filters = args.isEmpty() ? QVariantMap() : QtJson::Json::parse(args.takeFirst()).toMap();
+    QVariantMap params = args.isEmpty() ? QVariantMap() : QtJson::Json::parse(args.takeFirst()).toMap();
 
     QSettings settings;
-    
-    QYouTube::AuthenticationRequest request;
+
+    QYouTube::ResourcesRequest request;
+    request.setClientId(settings.value("Authentication/clientId").toString());
+    request.setClientSecret(settings.value("Authentication/clientSecret").toString());
+    request.setApiKey(settings.value("Authentication/apiKey").toString());
     request.setAccessToken(settings.value("Authentication/accessToken").toString());
-    request.revokeAccessToken();
+    request.setRefreshToken(settings.value("Authentication/refreshToken").toString());
+    request.list(resourcePath, part, filters, params);
     QObject::connect(&request, SIGNAL(finished()), &app, SLOT(quit()));
 
     return app.exec();

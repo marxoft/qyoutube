@@ -16,7 +16,6 @@
 
 #include "subtitlesmodel.h"
 #include "model_p.h"
-#include <QStringList>
 
 namespace QYouTube {
 
@@ -68,7 +67,6 @@ public:
     \class SubtitlesModel
     \brief A list model for displaying list of subtitles for a YouTube video.
     
-    \ingroup subtitles
     \ingroup models
     
     The SubtitlesModel is a list model used for displaying YouTube video subtitles in a list view. 
@@ -83,12 +81,20 @@ public:
         <th>Role name</th>
         </tr>
         <tr>
-            <td>LanguageRole</td>
-            <td>language</td>
+            <td>IdRole</td>
+            <td>id</td>
         </tr>
         <tr>
             <td>LanguageCodeRole</td>
             <td>languageCode</td>
+        </tr>
+        <tr>
+            <td>OriginalLanguageRole</td>
+            <td>originalLanguage</td>
+        </tr>
+        <tr>
+            <td>TranslatedLanguageRole</td>
+            <td>translatedLanguage</td>
         </tr>
         <tr>
             <td>UrlRole</td>
@@ -151,8 +157,10 @@ SubtitlesModel::SubtitlesModel(QObject *parent) :
     Model(*new SubtitlesModelPrivate(this), parent)
 {
     Q_D(SubtitlesModel);
-    d->roles[LanguageRole] = "language";
+    d->roles[IdRole] = "id";
     d->roles[LanguageCodeRole] = "languageCode";
+    d->roles[OriginalLanguageRole] = "originalLanguage";
+    d->roles[TranslatedLanguageRole] = "translatedLanguage";
     d->roles[UrlRole] = "url";
 #if QT_VERSION < 0x050000
     setRoleNames(d->roles);

@@ -1,11 +1,24 @@
+qyoutube (0.1.0) unstable; urgency=low
+
+  * Simplify the API by replacing multiple request classes with a single ResourceRequest class.
+  * Bug fixes.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Sat,  14 Mar 2015 16:49:14 +0100
+
 qyoutube (0.0.1) unstable; urgency=low
 
   * Initial release.
 
- -- Stuart Howarth <showarth@marxoft.co.uk>  Wed,  04 Mar 2014 23:46:32 +0100
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Wed,  04 Mar 2015 23:46:32 +0100
+ 
+qyoutube-qml (0.1.0) unstable; urgency=low
+
+  * Simplify the API by replacing multiple request classes with a single ResourceRequest class.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Sat,  14 Mar 2015 16:49:14 +0100
 
 qyoutube-qml (0.0.1) unstable; urgency=low
 
   * Initial release.
 
- -- Stuart Howarth <showarth@marxoft.co.uk>  Wed,  04 Mar 2014 23:46:32 +0100
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Wed,  04 Mar 2015 23:46:32 +0100

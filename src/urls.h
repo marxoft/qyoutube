@@ -17,63 +17,32 @@
 #ifndef URLS_H
 #define URLS_H
 
+#include <QString>
+
 namespace QYouTube {
 
+// API
+static const QString API_URL("https://www.googleapis.com/youtube/v3");
+
 // Authentication
-#define AUTH_URL "https://accounts.google.com/o/oauth2/auth"
-#define TOKEN_URL "https://accounts.google.com/o/oauth2/token"
-#define DEVICE_CODE_URL "https://accounts.google.com/o/oauth2/device/code"
-#define REVOKE_TOKEN_URL "https://accounts.google.com/o/oauth2/revoke"
-#define REDIRECT_URI "urn:ietf:wg:oauth:2.0:oob"
-#define READ_ONLY_SCOPE "https://www.googleapis.com/auth/youtube.readonly"
-#define READ_WRITE_SCOPE "https://www.googleapis.com/auth/youtube"
-#define UPLOAD_SCOPE "https://www.googleapis.com/auth/youtube.upload"
-#define AUDIT_SCOPE "https://www.googleapis.com/auth/youtubepartner-channel-audit"
-
-// Activities
-#define ACTIVITIES_URL "https://www.googleapis.com/youtube/v3/activities"
-
-// Channels
-#define CHANNELS_URL "https://www.googleapis.com/youtube/v3/channels"
-
-// ChannelSections
-#define CHANNEL_SECTIONS_URL "https://www.googleapis.com/youtube/v3/channelSections"
-
-// GuideCategories
-#define GUIDE_CATEGORIES_URL "https://www.googleapis.com/youtube/v3/guideCategories"
-
-// i18nLanguages
-#define I18N_LANGUAGES_URL "https://www.googleapis.com/youtube/v3/i18nLanguages"
-
-// i18nRegions
-#define I18N_REGIONS_URL "https://www.googleapis.com/youtube/v3/i18nRegions"
-
-// PlaylistItems
-#define PLAYLIST_ITEMS_URL "https://www.googleapis.com/youtube/v3/playlistItems"
-
-// Playlists
-#define PLAYLISTS_URL "https://www.googleapis.com/youtube/v3/playlists"
-
-// Search
-#define SEARCH_URL "https://www.googleapis.com/youtube/v3/search"
-
-// Subscriptions
-#define SUBSCRIPTIONS_URL "https://www.googleapis.com/youtube/v3/subscriptions"
+static const QString AUTH_URL("https://accounts.google.com/o/oauth2/auth");
+static const QString TOKEN_URL("https://accounts.google.com/o/oauth2/token");
+static const QString DEVICE_CODE_URL("https://accounts.google.com/o/oauth2/device/code");
+static const QString REVOKE_TOKEN_URL("https://accounts.google.com/o/oauth2/revoke");
+static const QString REDIRECT_URI("urn:ietf:wg:oauth:2.0:oob");
+static const QString READ_ONLY_SCOPE("https://www.googleapis.com/auth/youtube.readonly");
+static const QString READ_WRITE_SCOPE("https://www.googleapis.com/auth/youtube");
+static const QString UPLOAD_SCOPE("https://www.googleapis.com/auth/youtube.upload");
+static const QString AUDIT_SCOPE("https://www.googleapis.com/auth/youtubepartner-channel-audit");
 
 // Subtitles
-#define SUBTITLES_URL "https://video.google.com/timedtext"
-
-// VideoCategories
-#define VIDEO_CATEGORIES_URL "https://www.googleapis.com/youtube/v3/videoCategories"
+static const QString SUBTITLES_URL("https://video.google.com/timedtext");
 
 // VideoInfo
-#define VIDEO_INFO_URL "https://www.youtube.com/get_video_info"
+static const QString VIDEO_INFO_URL("https://www.youtube.com/get_video_info");
 
 // VideoPage
-#define VIDEO_PAGE_URL "https://www.youtube.com/watch"
-
-// Videos
-#define VIDEOS_URL "https://www.googleapis.com/youtube/v3/videos"
+static const QString VIDEO_PAGE_URL("https://www.youtube.com/watch");
 
 }
 

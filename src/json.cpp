@@ -46,8 +46,7 @@ static QString sanitizeString(QString str)
         str.replace(QLatin1String("\n"), QLatin1String("\\n"));
         str.replace(QLatin1String("\r"), QLatin1String("\\r"));
         str.replace(QLatin1String("\t"), QLatin1String("\\t"));
-        //return QString(QLatin1String("\"%1\"")).arg(str);
-        return str;
+        return QString(QLatin1String("\"%1\"")).arg(str);
 }
 
 static QByteArray join(const QList<QByteArray> &list, const QByteArray &sep)
@@ -147,7 +146,7 @@ QByteArray Json::serialize(const QVariant &data, bool &success)
                                 success = false;
                                 break;
                         }
-                        pairs << sanitizeString(it.key()).toUtf8() + " : " + serializedValue;
+                        pairs << sanitizeString(it.key()).toUtf8() + ": " + serializedValue;
                 }
                 str += join(pairs, ", ");
                 str += " }";

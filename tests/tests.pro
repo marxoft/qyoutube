@@ -1,17 +1,6 @@
 TEMPLATE = subdirs
 SUBDIRS += \
-    activities \
     authentication \
-    channels \
-    channelsections \
-    guidecategories \
-    i18nlanguages \
-    i18nregions \
-    playlistitems \
-    playlists \
-    search \
+    resources \
     streams \
-    subscriptions \
-    subtitles \
-    videocategories \
-    videos
+    subtitles

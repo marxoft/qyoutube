@@ -542,7 +542,6 @@ FormatHash StreamsRequestPrivate::formatHash;
     \class StreamsRequest
     \brief Handles requests for video streams
     
-    \ingroup streams
     \ingroup requests
     
     The StreamsRequest class is used for requesting a list of streams for a YouTube video.

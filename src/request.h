@@ -38,9 +38,9 @@ class QYOUTUBESHARED_EXPORT Request : public QObject
     Q_PROPERTY(QString clientSecret READ clientSecret WRITE setClientSecret NOTIFY clientSecretChanged)
     Q_PROPERTY(QString accessToken READ accessToken WRITE setAccessToken NOTIFY accessTokenChanged)
     Q_PROPERTY(QString refreshToken READ refreshToken WRITE setRefreshToken NOTIFY refreshTokenChanged)
-    Q_PROPERTY(QUrl url READ url WRITE setUrl NOTIFY urlChanged)
-    Q_PROPERTY(QVariantMap headers READ headers WRITE setHeaders RESET resetHeaders NOTIFY headersChanged)
-    Q_PROPERTY(QVariant data READ data WRITE setData RESET resetData NOTIFY dataChanged)
+    Q_PROPERTY(QUrl url READ url NOTIFY urlChanged)
+    Q_PROPERTY(QVariantMap headers READ headers NOTIFY headersChanged)
+    Q_PROPERTY(QVariant data READ data NOTIFY dataChanged)
     Q_PROPERTY(Operation operation READ operation NOTIFY operationChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
     Q_PROPERTY(QVariant result READ result NOTIFY finished)
@@ -125,15 +125,10 @@ public:
     void setRefreshToken(const QString &token);
     
     QUrl url() const;
-    void setUrl(const QUrl &url);
     
     QVariantMap headers() const;
-    void setHeaders(const QVariantMap &headers);
-    void resetHeaders();
     
     QVariant data() const;
-    void setData(const QVariant &data);
-    void resetData();
     
     Operation operation() const;
     
@@ -148,6 +143,11 @@ public:
     
 public Q_SLOTS:
     void cancel();
+    
+protected:
+    void setUrl(const QUrl &url);
+    void setHeaders(const QVariantMap &headers);
+    void setData(const QVariant &data);
     
 protected Q_SLOTS:
     void head(bool authRequired = true);

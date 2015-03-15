@@ -32,25 +32,26 @@ WebView::WebView(QWidget *parent) :
     request.setClientId(settings.value("Authentication/clientId").toString());
     request.setClientSecret(settings.value("Authentication/clientSecret").toString());
     request.setApiKey(settings.value("Authentication/apiKey").toString());
+    request.setScopes(settings.value("Authentication/scopes").toStringList());
     
     connect(this, SIGNAL(titleChanged(QString)), this, SLOT(onTitleChanged(QString)));
     connect(&request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
         
-    QUrl u(AUTH_URL);
+    QUrl u(QYouTube::AUTH_URL);
 #if QT_VERSION >= 0x050000
     QUrlQuery query(u);
     query.addQueryItem("client_id", request.clientId());
-    query.addQueryItem("redirect_uri", REDIRECT_URI);
+    query.addQueryItem("redirect_uri", QYouTube::REDIRECT_URI);
     query.addQueryItem("response_type", "code");
-    query.addQueryItem("scope", READ_ONLY_SCOPE);
+    query.addQueryItem("scope", request.scopes().join(" "));
     query.addQueryItem("access_type", "offline");
     query.addQueryItem("display", "popup");
     u.setQuery(query);
 #else
     u.addQueryItem("client_id", request.clientId());
-    u.addQueryItem("redirect_uri", REDIRECT_URI);
+    u.addQueryItem("redirect_uri", QYouTube::REDIRECT_URI);
     u.addQueryItem("response_type", "code");
-    u.addQueryItem("scope", READ_ONLY_SCOPE);
+    u.addQueryItem("scope", request.scopes().join(" "));
     u.addQueryItem("access_type", "offline");
     u.addQueryItem("display", "popup");
 #endif
