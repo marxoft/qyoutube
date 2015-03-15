@@ -17,6 +17,7 @@
 #include "resourcesrequest.h"
 #include "request_p.h"
 #include "urls.h"
+#include <QStringList>
 
 namespace QYouTube {
 

@@ -16,6 +16,7 @@
 
 #include "resourcesmodel.h"
 #include "model_p.h"
+#include <QStringList>
 #ifdef QYOUTUBE_DEBUG
 #include <QDebug>
 #endif
@@ -41,6 +42,8 @@ public:
             role++;
         }
 #if QT_VERSION < 0x050000
+        Q_Q(ResourcesModel);
+        
         q->setRoleNames(roles);
 #endif
     }
