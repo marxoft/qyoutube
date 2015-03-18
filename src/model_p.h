@@ -27,6 +27,8 @@ class ModelPrivate
 public:
     ModelPrivate(Model *parent);
     virtual ~ModelPrivate();
+    
+    void setRoleNames(const QVariantMap &item);
         
     Model *q_ptr;
     

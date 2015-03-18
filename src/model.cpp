@@ -264,6 +264,10 @@ bool Model::set(int row, const QVariantMap &properties) {
 void Model::append(const QVariantMap &properties) {
     Q_D(Model);
     
+    if (d->items.isEmpty()) {
+        d->setRoleNames(properties);
+    }
+    
     beginInsertRows(QModelIndex(), d->items.size(), d->items.size());
     d->items << properties;
     endInsertRows();
@@ -281,6 +285,10 @@ void Model::insert(int row, const QVariantMap &properties) {
     if ((row < 0) || (row >= d->items.size())) {
         append(properties);
         return;
+    }
+    
+    if (d->items.isEmpty()) {
+        d->setRoleNames(properties);
     }
     
     beginInsertRows(QModelIndex(), row, row);
@@ -329,6 +337,25 @@ ModelPrivate::ModelPrivate(Model *parent) :
 }
 
 ModelPrivate::~ModelPrivate() {}
+
+/*!
+    \internal
+    \brief Set the role names of the model using the unique keys of \a item.
+*/
+void ModelPrivate::setRoleNames(const QVariantMap &item) {    
+    roles.clear();
+    int role = Qt::UserRole + 1;
+    
+    foreach (QString key, item.uniqueKeys()) {
+        roles[role] = key.toUtf8();
+        role++;
+    }
+#if QT_VERSION < 0x050000
+    Q_Q(Model);
+    
+    q->setRoleNames(roles);
+#endif
+}
 
 }
 
