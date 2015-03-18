@@ -254,7 +254,7 @@ public:
 
                 QUrl url(urlString.left(urlString.indexOf('?')));
 #if QT_VERSION >= 0x050000
-                QUrlQuery query;
+                QUrlQuery query(url);
 
                 foreach (QString param, params) {
                     query.addQueryItem(param.section('=', 0, 0), param.section('=', -1));
@@ -311,7 +311,7 @@ public:
 
                 QUrl url(urlString.left(urlString.indexOf('?')));
 #if QT_VERSION >= 0x050000
-                QUrlQuery query;
+                QUrlQuery query(url);
 
                 foreach (QString param, params) {
                     query.addQueryItem(param.section('=', 0, 0), param.section('=', -1));
@@ -397,7 +397,7 @@ public:
                 qDebug() << "QYouTube::StreamsRequestPrivate::_q_onVideoInfoLoaded: video info OK. Parsing the page";
 #endif
                 response = response.section('&', 0, 0).replace("%2C", ",");
-                extractVideoStreams(response);
+                extractVideoStreams();
             }
         }
     }
