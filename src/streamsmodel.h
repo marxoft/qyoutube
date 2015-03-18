@@ -38,7 +38,8 @@ public:
         DescriptionRole,
         ExtensionRole,
         WidthRole,
-        HeightRole
+        HeightRole,
+        UrlRole
     };
         
     explicit StreamsModel(QObject *parent = 0);
