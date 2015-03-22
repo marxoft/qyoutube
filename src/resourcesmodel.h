@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RESOURCESMODEL_H
-#define RESOURCESMODEL_H
+#ifndef QYOUTUBE_RESOURCESMODEL_H
+#define QYOUTUBE_RESOURCESMODEL_H
 
 #include "model.h"
 #include "resourcesrequest.h"
@@ -103,4 +103,4 @@ private:
 
 }
 
-#endif // RESOURCESMODEL_H
+#endif // QYOUTUBE_RESOURCESMODEL_H

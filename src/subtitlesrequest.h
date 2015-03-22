@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-#ifndef SUBTITLESREQUEST_H
-#define SUBTITLESREQUEST_H
+#ifndef QYOUTUBE_SUBTITLESREQUEST_H
+#define QYOUTUBE_SUBTITLESREQUEST_H
 
 #include "request.h"
 
@@ -40,4 +40,4 @@ private:
 
 }
 
-#endif // SUBTITLESREQUEST_H
+#endif // QYOUTUBE_SUBTITLESREQUEST_H

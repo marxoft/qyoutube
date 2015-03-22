@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-#ifndef AUTHENTICATIONREQUEST_H
-#define AUTHENTICATIONREQUEST_H
+#ifndef QYOUTUBE_AUTHENTICATIONREQUEST_H
+#define QYOUTUBE_AUTHENTICATIONREQUEST_H
 
 #include "request.h"
 
@@ -57,4 +57,4 @@ private:
 
 }
 
-#endif // AUTHENTICATIONREQUEST_H
+#endif // QYOUTUBE_AUTHENTICATIONREQUEST_H

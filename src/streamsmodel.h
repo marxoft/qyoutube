@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STREAMSMODEL_H
-#define STREAMSMODEL_H
+#ifndef QYOUTUBE_STREAMSMODEL_H
+#define QYOUTUBE_STREAMSMODEL_H
 
 #include "model.h"
 #include "streamsrequest.h"
@@ -69,4 +69,4 @@ private:
 
 }
 
-#endif // STREAMSMODEL_H
+#endif // QYOUTUBE_STREAMSMODEL_H

@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MODEL_P_H
-#define MODEL_P_H
+#ifndef QYOUTUBE_MODEL_P_H
+#define QYOUTUBE_MODEL_P_H
 
 #include "model.h"
 
@@ -41,4 +41,4 @@ public:
 
 }
 
-#endif // MODEL_P_H
+#endif // QYOUTUBE_MODEL_P_H

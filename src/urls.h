@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URLS_H
-#define URLS_H
+#ifndef QYOUTUBE_URLS_H
+#define QYOUTUBE_URLS_H
 
 #include <QString>
 
@@ -46,4 +46,4 @@ static const QString VIDEO_PAGE_URL("https://www.youtube.com/watch");
 
 }
 
-#endif // URLS_H
+#endif // QYOUTUBE_URLS_H

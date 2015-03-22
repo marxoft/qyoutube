@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-#ifndef RESOURCESREQUEST_H
-#define RESOURCESREQUEST_H
+#ifndef QYOUTUBE_RESOURCESREQUEST_H
+#define QYOUTUBE_RESOURCESREQUEST_H
 
 #include "request.h"
 
@@ -45,4 +45,4 @@ private:
 
 }
 
-#endif // RESOURCESREQUEST_H
+#endif // QYOUTUBE_RESOURCESREQUEST_H

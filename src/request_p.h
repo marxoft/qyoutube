@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef REQUEST_P_H
-#define REQUEST_P_H
+#ifndef QYOUTUBE_REQUEST_P_H
+#define QYOUTUBE_REQUEST_P_H
 
 #include "request.h"
 #include "json.h"
@@ -215,4 +215,4 @@ public:
 
 }
 
-#endif // REQUEST_P_H
+#endif // QYOUTUBE_REQUEST_P_H

@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SUBTITLESMODEL_H
-#define SUBTITLESMODEL_H
+#ifndef QYOUTUBE_SUBTITLESMODEL_H
+#define QYOUTUBE_SUBTITLESMODEL_H
 
 #include "model.h"
 #include "subtitlesrequest.h"
@@ -68,4 +68,4 @@ private:
 
 }
 
-#endif // SUBTITLESMODEL_H
+#endif // QYOUTUBE_SUBTITLESMODEL_H

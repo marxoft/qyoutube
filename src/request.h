@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef REQUEST_H
-#define REQUEST_H
+#ifndef QYOUTUBE_REQUEST_H
+#define QYOUTUBE_REQUEST_H
 
 #include "qyoutube_global.h"
 #include <QObject>
@@ -185,4 +185,4 @@ private:
 
 }
 
-#endif // REQUEST_H
+#endif // QYOUTUBE_REQUEST_H
