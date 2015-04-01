@@ -155,7 +155,7 @@ void Model::append(const QMap<int, QVariant> &roles) {
     beginInsertRows(QModelIndex(), d->items.size(), d->items.size());
     d->items << item;
     endInsertRows();
-    emit countChanged();
+    emit countChanged(rowCount());
 }
 
 /*!
@@ -182,7 +182,7 @@ void Model::insert(const QModelIndex &index, const QMap<int, QVariant> &roles) {
     beginInsertRows(QModelIndex(), index.row(), index.row());
     d->items.insert(index.row(), item);
     endInsertRows();
-    emit countChanged();
+    emit countChanged(rowCount());
 }
 
 /*!
@@ -200,7 +200,7 @@ bool Model::remove(const QModelIndex &index) {
     beginRemoveRows(QModelIndex(), index.row(), index.row());
     d->items.removeAt(index.row());
     endRemoveRows();
-    emit countChanged();
+    emit countChanged(rowCount());
     
     return true;
 }
@@ -271,7 +271,7 @@ void Model::append(const QVariantMap &properties) {
     beginInsertRows(QModelIndex(), d->items.size(), d->items.size());
     d->items << properties;
     endInsertRows();
-    emit countChanged();
+    emit countChanged(rowCount());
 }
 
 /*!
@@ -294,7 +294,7 @@ void Model::insert(int row, const QVariantMap &properties) {
     beginInsertRows(QModelIndex(), row, row);
     d->items.insert(row, properties);
     endInsertRows();
-    emit countChanged();
+    emit countChanged(rowCount());
 }
 
 /*!
@@ -312,7 +312,7 @@ bool Model::remove(int row) {
     beginRemoveRows(QModelIndex(), row, row);
     d->items.removeAt(row);
     endRemoveRows();
-    emit countChanged();
+    emit countChanged(rowCount());
     
     return true;
 }
@@ -327,7 +327,7 @@ void Model::clear() {
         beginResetModel();
         d->items.clear();
         endResetModel();
-        emit countChanged();
+        emit countChanged(rowCount());
     }
 }
 

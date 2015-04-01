@@ -153,7 +153,7 @@ void Request::setAccessToken(const QString &token) {
     
     if (token != d->accessToken) {
         d->accessToken = token;
-        emit accessTokenChanged();
+        emit accessTokenChanged(token);
     }
 #ifdef QYOUTUBE_DEBUG
     qDebug() << "QYouTube::Request::setAccessToken" << token;
@@ -180,7 +180,7 @@ void Request::setRefreshToken(const QString &token) {
     
     if (token != d->refreshToken) {
         d->refreshToken = token;
-        emit refreshTokenChanged();
+        emit refreshTokenChanged(token);
     }
 #ifdef QYOUTUBE_DEBUG
     qDebug() << "QYouTube::Request::setRefreshToken" << token;
@@ -773,7 +773,7 @@ void RequestPrivate::setStatus(Request::Status s) {
     if (s != status) {
         Q_Q(Request);
         status = s;
-        emit q->statusChanged();
+        emit q->statusChanged(s);
     }
 #ifdef QYOUTUBE_DEBUG
     qDebug() << "QYouTube::RequestPrivate::setStatus" << Request::Status(s);

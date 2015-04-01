@@ -62,7 +62,7 @@ public Q_SLOTS:
     void clear();
     
 Q_SIGNALS:
-    void countChanged();
+    void countChanged(int c);
     
 protected:
     Model(ModelPrivate &dd, QObject *parent = 0);

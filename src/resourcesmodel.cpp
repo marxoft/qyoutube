@@ -60,14 +60,14 @@ public:
                     }
                     
                     q->endInsertRows();
-                    emit q->countChanged();
+                    emit q->countChanged(q->rowCount());
                 }
             }
         }
         
         ResourcesModel::disconnect(request, SIGNAL(finished()), q, SLOT(_q_onListRequestFinished()));
     
-        emit q->statusChanged();
+        emit q->statusChanged(request->status());
     }
     
     void _q_onInsertRequestFinished() {
@@ -88,13 +88,13 @@ public:
                 q->beginInsertRows(QModelIndex(), 0, 0);
                 items.prepend(result);
                 q->endInsertRows();
-                emit q->countChanged();
+                emit q->countChanged(q->rowCount());
             }
         }
         
         ResourcesModel::disconnect(request, SIGNAL(finished()), q, SLOT(_q_onInsertRequestFinished()));
     
-        emit q->statusChanged();
+        emit q->statusChanged(request->status());
     }
     
     void _q_onUpdateRequestFinished() {
@@ -123,7 +123,7 @@ public:
         
         ResourcesModel::disconnect(request, SIGNAL(finished()), q, SLOT(_q_onUpdateRequestFinished()));
     
-        emit q->statusChanged();
+        emit q->statusChanged(request->status());
     }
     
     void _q_onDeleteRequestFinished() {
@@ -140,7 +140,7 @@ public:
                     q->beginRemoveRows(QModelIndex(), i, i);
                     items.removeAt(i);
                     q->endRemoveRows();
-                    emit q->countChanged();
+                    emit q->countChanged(q->rowCount());
                     break;
                 }
             }
@@ -148,7 +148,7 @@ public:
         
         ResourcesModel::disconnect(request, SIGNAL(finished()), q, SLOT(_q_onDeleteRequestFinished()));
     
-        emit q->statusChanged();
+        emit q->statusChanged(request->status());
     }
     
     ResourcesRequest *request;
@@ -242,8 +242,8 @@ ResourcesModel::ResourcesModel(QObject *parent) :
     connect(d->request, SIGNAL(apiKeyChanged()), this, SIGNAL(apiKeyChanged()));
     connect(d->request, SIGNAL(clientIdChanged()), this, SIGNAL(clientIdChanged()));
     connect(d->request, SIGNAL(clientSecretChanged()), this, SIGNAL(clientSecretChanged()));
-    connect(d->request, SIGNAL(accessTokenChanged()), this, SIGNAL(accessTokenChanged()));
-    connect(d->request, SIGNAL(refreshTokenChanged()), this, SIGNAL(refreshTokenChanged()));
+    connect(d->request, SIGNAL(accessTokenChanged(QString)), this, SIGNAL(accessTokenChanged(QString)));
+    connect(d->request, SIGNAL(refreshTokenChanged(QString)), this, SIGNAL(refreshTokenChanged(QString)));
 }
 
 /*!
@@ -387,6 +387,18 @@ ResourcesRequest::Status ResourcesModel::status() const {
 }
 
 /*!
+    \property QVariant ResourcesModel::result
+    \brief The current result of the model.
+    
+    \sa ResourcesRequest::result
+*/
+QVariant ResourcesModel::result() const {
+    Q_D(const ResourcesModel);
+    
+    return d->request->result();
+}
+
+/*!
     \property enum ResourcesModel::error
     \brief The error type of the model.
     
@@ -444,7 +456,7 @@ void ResourcesModel::fetchMore(const QModelIndex &) {
         
         connect(d->request, SIGNAL(finished()), this, SLOT(_q_onListRequestFinished()));
         d->request->list(d->resourcePath, d->part, d->filters, params);
-        emit statusChanged();
+        emit statusChanged(d->request->status());
     }
 }
 
@@ -464,7 +476,7 @@ void ResourcesModel::list(const QString &resourcePath, const QStringList &part, 
         d->params = params;
         connect(d->request, SIGNAL(finished()), this, SLOT(_q_onListRequestFinished()));
         d->request->list(d->resourcePath, d->part, d->filters, d->params);
-        emit statusChanged();
+        emit statusChanged(d->request->status());
     }
 }
 
@@ -478,7 +490,7 @@ void ResourcesModel::insert(const QVariantMap &resource, const QStringList &part
         Q_D(ResourcesModel);
         connect(d->request, SIGNAL(finished()), this, SLOT(_q_onInsertRequestFinished()));
         d->request->insert(resource, d->resourcePath, part, params);
-        emit statusChanged();
+        emit statusChanged(d->request->status());
     }
 }
 
@@ -493,7 +505,7 @@ void ResourcesModel::insert(int row, const QString &resourcePath, const QStringL
         d->writeResourcePath = resourcePath;
         connect(d->request, SIGNAL(finished()), this, SLOT(_q_onInsertRequestFinished()));
         d->request->insert(get(row), resourcePath, part, params);
-        emit statusChanged();
+        emit statusChanged(d->request->status());
     }
 }
 
@@ -514,7 +526,7 @@ void ResourcesModel::update(int row, const QVariantMap &resource, const QStringL
                     
         connect(d->request, SIGNAL(finished()), this, SLOT(_q_onUpdateRequestFinished()));
         d->request->update(d->resourcePath, item, part);
-        emit statusChanged();
+        emit statusChanged(d->request->status());
     }
 }
 
@@ -528,7 +540,7 @@ void ResourcesModel::del(int row) {
         d->writeResourcePath = d->resourcePath;
         connect(d->request, SIGNAL(finished()), this, SLOT(_q_onDeleteRequestFinished()));
         d->request->del(d->delId, d->resourcePath);
-        emit statusChanged();
+        emit statusChanged(d->request->status());
     }
 }
 
@@ -542,7 +554,7 @@ void ResourcesModel::del(int row, const QString &resourcePath) {
         d->writeResourcePath = resourcePath;
         connect(d->request, SIGNAL(finished()), this, SLOT(_q_onDeleteRequestFinished()));
         d->request->del(d->delId, resourcePath);
-        emit statusChanged();
+        emit statusChanged(d->request->status());
     }
 }
 
@@ -568,7 +580,7 @@ void ResourcesModel::reload() {
         clear();
         connect(d->request, SIGNAL(finished()), this, SLOT(_q_onListRequestFinished()));
         d->request->list(d->resourcePath, d->part, d->filters, d->params);
-        emit statusChanged();
+        emit statusChanged(d->request->status());
     }
 }
 

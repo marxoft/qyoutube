@@ -29,6 +29,7 @@ class QYOUTUBESHARED_EXPORT StreamsModel : public Model
     Q_OBJECT
     
     Q_PROPERTY(QYouTube::StreamsRequest::Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(QVariant result READ result NOTIFY statusChanged)
     Q_PROPERTY(QYouTube::StreamsRequest::Error error READ error NOTIFY statusChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY statusChanged)
                 
@@ -46,6 +47,8 @@ public:
     
     StreamsRequest::Status status() const;
     
+    QVariant result() const;
+    
     StreamsRequest::Error error() const;
     QString errorString() const;
     
@@ -58,7 +61,7 @@ public Q_SLOTS:
     void reload();
     
 Q_SIGNALS:
-    void statusChanged();
+    void statusChanged(QYouTube::StreamsRequest::Status s);
     
 private:        
     Q_DECLARE_PRIVATE(StreamsModel)

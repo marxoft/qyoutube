@@ -160,13 +160,13 @@ Q_SIGNALS:
     void apiKeyChanged();
     void clientIdChanged();
     void clientSecretChanged();
-    void accessTokenChanged();
-    void refreshTokenChanged();
+    void accessTokenChanged(const QString &token);
+    void refreshTokenChanged(const QString &token);
     void urlChanged();
     void dataChanged();
     void headersChanged();
     void operationChanged();
-    void statusChanged();
+    void statusChanged(Status s);
     void finished();
     
 protected:

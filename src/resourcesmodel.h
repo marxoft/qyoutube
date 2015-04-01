@@ -34,6 +34,7 @@ class QYOUTUBESHARED_EXPORT ResourcesModel : public Model
     Q_PROPERTY(QString accessToken READ accessToken WRITE setAccessToken NOTIFY accessTokenChanged)
     Q_PROPERTY(QString refreshToken READ refreshToken WRITE setRefreshToken NOTIFY refreshTokenChanged)
     Q_PROPERTY(QYouTube::ResourcesRequest::Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(QVariant result READ result NOTIFY statusChanged)
     Q_PROPERTY(QYouTube::ResourcesRequest::Error error READ error NOTIFY statusChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY statusChanged)
                 
@@ -56,6 +57,8 @@ public:
     void setRefreshToken(const QString &token);
     
     ResourcesRequest::Status status() const;
+    
+    QVariant result() const;
     
     ResourcesRequest::Error error() const;
     QString errorString() const;
@@ -87,9 +90,9 @@ Q_SIGNALS:
     void apiKeyChanged();
     void clientIdChanged();
     void clientSecretChanged();
-    void accessTokenChanged();
-    void refreshTokenChanged();
-    void statusChanged();
+    void accessTokenChanged(const QString &token);
+    void refreshTokenChanged(const QString &token);
+    void statusChanged(QYouTube::ResourcesRequest::Status s);
     
 private:        
     Q_DECLARE_PRIVATE(ResourcesModel)

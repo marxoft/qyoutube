@@ -29,6 +29,7 @@ class QYOUTUBESHARED_EXPORT SubtitlesModel : public Model
     Q_OBJECT
     
     Q_PROPERTY(QYouTube::SubtitlesRequest::Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(QVariant result READ result NOTIFY statusChanged)
     Q_PROPERTY(QYouTube::SubtitlesRequest::Error error READ error NOTIFY statusChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY statusChanged)
                 
@@ -45,6 +46,8 @@ public:
     
     SubtitlesRequest::Status status() const;
     
+    QVariant result() const;
+    
     SubtitlesRequest::Error error() const;
     QString errorString() const;
     
@@ -57,7 +60,7 @@ public Q_SLOTS:
     void reload();
     
 Q_SIGNALS:
-    void statusChanged();
+    void statusChanged(QYouTube::SubtitlesRequest::Status s);
     
 private:        
     Q_DECLARE_PRIVATE(SubtitlesModel)

@@ -47,13 +47,13 @@ public:
                 }
                 
                 q->endInsertRows();
-                emit q->countChanged();
+                emit q->countChanged(q->rowCount());
             }
         }
         
         SubtitlesModel::disconnect(request, SIGNAL(finished()), q, SLOT(_q_onListRequestFinished()));
     
-        emit q->statusChanged();
+        emit q->statusChanged(request->status());
     }
     
     SubtitlesRequest *request;
@@ -186,6 +186,18 @@ SubtitlesRequest::Status SubtitlesModel::status() const {
 }
 
 /*!
+    \property QVariant SubtitlesModel::result
+    \brief The current result of the model.
+    
+    \sa SubtitlesRequest::result
+*/
+QVariant SubtitlesModel::result() const {
+    Q_D(const SubtitlesModel);
+    
+    return d->request->result();
+}
+
+/*!
     \property enum SubtitlesModel::error
     \brief The error type of the model.
     
@@ -236,7 +248,7 @@ void SubtitlesModel::list(const QString &id) {
         clear();
         connect(d->request, SIGNAL(finished()), this, SLOT(_q_onListRequestFinished()));
         d->request->list(id);
-        emit statusChanged();
+        emit statusChanged(d->request->status());
     }
 }
 
@@ -262,7 +274,7 @@ void SubtitlesModel::reload() {
         clear();
         connect(d->request, SIGNAL(finished()), this, SLOT(_q_onListRequestFinished()));
         d->request->list(d->id);
-        emit statusChanged();
+        emit statusChanged(d->request->status());
     }
 }
 
