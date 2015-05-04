@@ -136,6 +136,7 @@ void ResourcesRequest::list(const QString &resourcePath, const QStringList &part
     }
 #endif
     setUrl(u);
+    setData(QVariant());
     get();
 }
 
@@ -234,6 +235,7 @@ void ResourcesRequest::del(const QString &id, const QString &resourcePath) {
     u.addQueryItem("id", id);
 #endif
     setUrl(u);
+    setData(QVariant());
     deleteResource();
 }
 

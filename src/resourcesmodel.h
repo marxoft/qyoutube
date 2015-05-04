@@ -28,6 +28,7 @@ class QYOUTUBESHARED_EXPORT ResourcesModel : public Model
 {
     Q_OBJECT
     
+    Q_PROPERTY(bool canFetchMore READ canFetchMore NOTIFY statusChanged)
     Q_PROPERTY(QString apiKey READ apiKey WRITE setApiKey NOTIFY apiKeyChanged)
     Q_PROPERTY(QString clientId READ clientId WRITE setClientId NOTIFY clientIdChanged)
     Q_PROPERTY(QString clientSecret READ clientSecret WRITE setClientSecret NOTIFY clientSecretChanged)
@@ -66,7 +67,7 @@ public:
     void setNetworkAccessManager(QNetworkAccessManager *manager);
     
     bool canFetchMore(const QModelIndex &parent = QModelIndex()) const;
-    void fetchMore(const QModelIndex &parent = QModelIndex());
+    Q_INVOKABLE void fetchMore(const QModelIndex &parent = QModelIndex());
     
 public Q_SLOTS:
     void list(const QString &resourcePath, const QStringList &part, const QVariantMap &filters = QVariantMap(),

@@ -1,3 +1,9 @@
+qyoutube (0.1.1) unstable; urgency=low
+
+  * Bug fixes.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Mon,  20 Apr 2015 14:42:42 +0100
+
 qyoutube (0.1.0) unstable; urgency=low
 
   * Simplify the API by replacing multiple request classes with a single ResourceRequest class.

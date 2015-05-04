@@ -62,8 +62,13 @@ public:
     
         bool ok;
         setResult(QtJson::Json::parse(reply->readAll(), ok));
+        
+        QNetworkReply::NetworkError e = reply->error();
+        QString es = reply->errorString();
+        reply->deleteLater();
+        reply = 0;
     
-        switch (reply->error()) {
+        switch (e) {
         case QNetworkReply::NoError:
             break;
         case QNetworkReply::OperationCanceledError:
@@ -74,8 +79,8 @@ public:
             return;
         default:
             setStatus(Request::Failed);
-            setError(Request::Error(reply->error()));
-            setErrorString(reply->errorString());
+            setError(Request::Error(e));
+            setErrorString(es);
             emit q->finished();
             return;
         }
@@ -280,6 +285,7 @@ void AuthenticationRequest::revokeAccessToken() {
     u.addQueryItem("token", accessToken());
 #endif
     setUrl(u);
+    setData(QVariant());
     get(false);
 }
 

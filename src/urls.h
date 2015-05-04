@@ -30,9 +30,12 @@ static const QString TOKEN_URL("https://accounts.google.com/o/oauth2/token");
 static const QString DEVICE_CODE_URL("https://accounts.google.com/o/oauth2/device/code");
 static const QString REVOKE_TOKEN_URL("https://accounts.google.com/o/oauth2/revoke");
 static const QString REDIRECT_URI("urn:ietf:wg:oauth:2.0:oob");
+
 static const QString READ_ONLY_SCOPE("https://www.googleapis.com/auth/youtube.readonly");
 static const QString READ_WRITE_SCOPE("https://www.googleapis.com/auth/youtube");
+static const QString FORCE_SSL_SCOPE("https://www.googleapis.com/auth/youtube.force-ssl");
 static const QString UPLOAD_SCOPE("https://www.googleapis.com/auth/youtube.upload");
+static const QString PARTNER_SCOPE("https://www.googleapis.com/auth/youtubepartner");
 static const QString AUDIT_SCOPE("https://www.googleapis.com/auth/youtubepartner-channel-audit");
 
 // Subtitles
