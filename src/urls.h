@@ -42,7 +42,8 @@ static const QString AUDIT_SCOPE("https://www.googleapis.com/auth/youtubepartner
 static const QString SUBTITLES_URL("https://video.google.com/timedtext");
 
 // VideoInfo
-static const QString VIDEO_INFO_URL("https://www.youtube.com/get_video_info");
+static const QString VIDEO_INFO_URL("http://www.youtube.com/get_video_info");
+static const QString VIDEO_INFO_SSL_URL("https://www.youtube.com/get_video_info");
 
 // VideoPage
 static const QString VIDEO_PAGE_URL("https://www.youtube.com/watch");

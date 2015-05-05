@@ -1,3 +1,9 @@
+qyoutube (0.1.2) unstable; urgency=low
+
+  * Avoid SSL streams where possible.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Tue,  05 May 2015 15:35:41 +0100
+
 qyoutube (0.1.1) unstable; urgency=low
 
   * Bug fixes.
