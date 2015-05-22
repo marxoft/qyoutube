@@ -201,7 +201,7 @@ void AuthenticationRequest::setScopes(const QStringList &scopes) {
     d->scopes = scopes;
     emit scopesChanged();
 #if QYOUTUBE_DEBUG
-    qDebug() << "AuthenticationRequest::setScopes" << scopes;
+    qDebug() << "QYouTube::AuthenticationRequest::setScopes" << scopes;
 #endif
 }
 

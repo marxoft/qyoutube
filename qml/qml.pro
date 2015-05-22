@@ -1,9 +1,15 @@
 TEMPLATE = lib
 TARGET = qyoutubeplugin
-CONFIG += qt plugin link_prl
+CONFIG += qt plugin
 LIBS += -L../lib -lqyoutube
-PKGCONFIG = libqyoutube
-INCLUDEPATH += ../src
+
+contains(MEEGO_EDITION,harmattan) {
+    CONFIG += link_pkgconfig
+    INSTALL_QML_PREFIX = /usr
+} else {
+    CONFIG += link_prl
+    PKGCONFIG = libqyoutube
+}
 
 lessThan(QT_MAJOR_VERSION, 5) {
     QT += declarative
@@ -22,7 +28,7 @@ qml.files = qmldir
 !isEmpty(INSTALL_QML_PREFIX) {
     qml.path = $$INSTALL_QML_PREFIX/lib/qt4/imports/QYouTube
     target.path = $$INSTALL_QML_PREFIX/lib/qt4/imports/QYouTube
-} lessThan(QT_MAJOR_VERSION, 5) {
+} else:lessThan(QT_MAJOR_VERSION, 5) {
     qml.path = $$[QT_INSTALL_IMPORTS]/QYouTube
     target.path = $$[QT_INSTALL_IMPORTS]/QYouTube
 } else {

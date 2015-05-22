@@ -32,7 +32,7 @@ class RequestPrivate;
 class QYOUTUBESHARED_EXPORT Request : public QObject
 {
     Q_OBJECT
-    
+
     Q_PROPERTY(QString apiKey READ apiKey WRITE setApiKey NOTIFY apiKeyChanged)
     Q_PROPERTY(QString clientId READ clientId WRITE setClientId NOTIFY clientIdChanged)
     Q_PROPERTY(QString clientSecret READ clientSecret WRITE setClientSecret NOTIFY clientSecretChanged)
