@@ -979,7 +979,7 @@ void RequestPrivate::_q_onReplyFinished() {
     }
     
     bool ok = true;
-    QString response(reply->readAll());
+    QString response = QString::fromUtf8(reply->readAll());
     setResult(response.isEmpty() ? response : QtJson::Json::parse(response, ok));
     
     QNetworkReply::NetworkError e = reply->error();
