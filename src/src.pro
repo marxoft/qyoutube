@@ -1,21 +1,13 @@
 TEMPLATE = lib
 
 #DEFINES += QYOUTUBE_DEBUG
+DEFINES += QYOUTUBE_STATIC_LIBRARY
 
 QT += network xml script
 QT -= gui
 
 TARGET = qyoutube
 DESTDIR = ../lib
-
-contains(MEEGO_EDITION,harmattan) {
-    CONFIG += staticlib
-    DEFINES += QYOUTUBE_STATIC_LIBRARY
-} else {
-    CONFIG += create_prl
-    DEFINES += QYOUTUBE_LIBRARY
-    INSTALLS += headers
-}
 
 HEADERS += \
     authenticationrequest.h \
@@ -57,13 +49,25 @@ headers.files += \
     subtitlesmodel.h \
     subtitlesrequest.h \
     urls.h
-
-!isEmpty(INSTALL_SRC_PREFIX) {
-    target.path = $$INSTALL_SRC_PREFIX/lib
-    headers.path = $$INSTALL_SRC_PREFIX/include/qyoutube
-} else {
-    target.path = /usr/lib
-    headers.path = /usr/include/qyoutube
+    
+symbian {
+    TARGET.CAPABILITY += NetworkServices ReadUserData WriteUserData
+    TARGET.EPOCALLOWDLLDATA = 1
+    TARGET.EPOCHEAPSIZE = 0x20000 0x8000000
+    TARGET.EPOCSTACKSIZE = 0x14000
 }
 
-INSTALLS += target
+contains(DEFINES,QYOUTUBE_STATIC_LIBRARY) {
+    CONFIG += staticlib
+} else {
+    CONFIG += create_prl
+    INSTALLS += target headers
+
+    !isEmpty(INSTALL_SRC_PREFIX) {
+        target.path = $$INSTALL_SRC_PREFIX/lib
+        headers.path = $$INSTALL_SRC_PREFIX/include/qyoutube
+    } else {
+        target.path = /usr/lib
+        headers.path = /usr/include/qyoutube
+    }
+}
