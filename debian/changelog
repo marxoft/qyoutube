@@ -1,3 +1,9 @@
+qyoutube (0.1.5) unstable; urgency=low
+
+  * String encoding fixes.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Sun, 25 Aug 2015 00:39:15 +0000
+
 qyoutube (0.1.4) unstable; urgency=low
 
   * Fix encoding of strings sent to the server.
