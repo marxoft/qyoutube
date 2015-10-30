@@ -247,14 +247,14 @@ ResourcesModel::ResourcesModel(QObject *parent) :
 }
 
 /*!
-    \property QString VideosModel::apiKey
+    \property QString ResourcesModel::apiKey
     \brief The api key to be used when making requests to the YouTube Data API.
     
     \sa VideosRequest::apiKey
 */
 
 /*!
-    \fn void VideosModel::apiKeyChanged()
+    \fn void ResourcesModel::apiKeyChanged()
     \brief Emitted when the apiKey changes.
 */
 QString ResourcesModel::apiKey() const {
@@ -325,7 +325,7 @@ void ResourcesModel::setClientSecret(const QString &secret) {
     
     The access token is required when accessing a resource's protected resources.
     
-    \as ResourcesRequest::accessToken
+    \sa ResourcesRequest::accessToken
 */
 
 /*!
