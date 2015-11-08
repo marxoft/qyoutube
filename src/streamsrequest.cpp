@@ -170,15 +170,11 @@ public:
 #ifdef QYOUTUBE_DEBUG
         qDebug() << "QYouTube::StreamsRequestPrivate::getVideoInfo: Fetching video info" << u;
 #endif
-        if (reply) {
-            delete reply;
-        }
-        
         q->setUrl(u);
         setOperation(StreamsRequest::GetOperation);
         setStatus(StreamsRequest::Loading);
-        reply = networkAccessManager()->get(buildRequest(false));
-        StreamsRequest::connect(reply, SIGNAL(finished()), q, SLOT(_q_onVideoInfoLoaded()));
+        StreamsRequest::connect(get(false), SIGNAL(finished()),
+                                q, SLOT(_q_onVideoInfoLoaded()));
     }
     
     void getVideoWebPage() {
@@ -201,17 +197,12 @@ public:
 #ifdef QYOUTUBE_DEBUG
         qDebug() << "QYouTube::StreamsRequestPrivate::getVideoWebPage: Fetching video web page" << u;
 #endif
-        if (reply) {
-            delete reply;
-        }
-        
         q->setUrl(u);
         QNetworkRequest request = buildRequest(false);
         request.setRawHeader("User-Agent", "Wget/1.13.4 (linux-gnu)");
         setOperation(StreamsRequest::GetOperation);
         setStatus(StreamsRequest::Loading);
-        reply = networkAccessManager()->get(request);
-        StreamsRequest::connect(reply, SIGNAL(finished()), q, SLOT(_q_onVideoWebPageLoaded()));
+        StreamsRequest::connect(get(request), SIGNAL(finished()), q, SLOT(_q_onVideoWebPageLoaded()));
     }
     
     QScriptValue getDecryptionFunction(const QUrl &playerUrl) {
@@ -223,15 +214,11 @@ public:
 #endif
         Q_Q(StreamsRequest);
         
-        if (reply) {
-            delete reply;
-        }
-        
         q->setUrl(playerUrl);
         setOperation(StreamsRequest::GetOperation);
         setStatus(StreamsRequest::Loading);
-        reply = networkAccessManager()->get(buildRequest(false));
-        StreamsRequest::connect(reply, SIGNAL(finished()), q, SLOT(_q_onPlayerJSLoaded()));
+        StreamsRequest::connect(get(false), SIGNAL(finished()),
+                                q, SLOT(_q_onPlayerJSLoaded()));
         
         return QScriptValue();
     }
@@ -352,17 +339,13 @@ public:
     }
     
     void _q_onVideoInfoLoaded() {
-        if (!reply) {
-            return;
-        }
-        
         Q_Q(StreamsRequest);
-        
+        QNetworkReply *reply = qobject_cast<QNetworkReply *>(q->sender());
+
         response = reply->readAll();
         const QNetworkReply::NetworkError e = reply->error();
         const QString es = reply->errorString();
-        reply->deleteLater();
-        reply = 0;
+        deleteReply(reply);
         
         switch (e) {
         case QNetworkReply::NoError:
@@ -410,17 +393,13 @@ public:
     }
     
     void _q_onVideoWebPageLoaded() {
-        if (!reply) {
-            return;
-        }
-        
         Q_Q(StreamsRequest);
-        
+        QNetworkReply *reply = qobject_cast<QNetworkReply *>(q->sender());
+
         response = reply->readAll();
         const QNetworkReply::NetworkError e = reply->error();
         const QString es = reply->errorString();
-        reply->deleteLater();
-        reply = 0;
+        deleteReply(reply);
         
         switch (e) {
         case QNetworkReply::NoError:
@@ -479,18 +458,13 @@ public:
     }
     
     void _q_onPlayerJSLoaded() {
-        if (!reply) {
-            return;
-        }
-        
         Q_Q(StreamsRequest);
-        
+        QNetworkReply *reply = qobject_cast<QNetworkReply *>(q->sender());
         const QString jsresponse(reply->readAll());
         const QNetworkReply::NetworkError e = reply->error();
         const QString es = reply->errorString();
         const QUrl playerUrl = reply->request().url();
-        reply->deleteLater();
-        reply = 0;
+        deleteReply(reply);
         
         switch (e) {
         case QNetworkReply::NoError:

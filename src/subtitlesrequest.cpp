@@ -33,12 +33,9 @@ public:
     }
     
     void _q_onReplyFinished() {
-        if (!reply) {
-            return;
-        }
-    
         Q_Q(SubtitlesRequest);
-    
+        QNetworkReply *reply = qobject_cast<QNetworkReply *>(q->sender());
+
         if (redirects < MAX_REDIRECTS) {
             QUrl redirect = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
     
@@ -47,8 +44,7 @@ public:
             }
     
             if (!redirect.isEmpty()) {
-                reply->deleteLater();
-                reply = 0;
+                deleteReply(reply);
                 followRedirect(redirect);
             }
         }
@@ -57,8 +53,7 @@ public:
         const QNetworkReply::NetworkError e = reply->error();
         const QString es = reply->errorString();
         const QUrl subtitlesUrl = reply->request().url();
-        reply->deleteLater();
-        reply = 0;
+        deleteReply(reply);
     
         switch (e) {
         case QNetworkReply::NoError:
