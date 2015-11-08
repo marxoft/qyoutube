@@ -63,8 +63,8 @@ public:
         bool ok;
         setResult(QtJson::Json::parse(reply->readAll(), ok));
         
-        QNetworkReply::NetworkError e = reply->error();
-        QString es = reply->errorString();
+        const QNetworkReply::NetworkError e = reply->error();
+        const QString es = reply->errorString();
         reply->deleteLater();
         reply = 0;
     

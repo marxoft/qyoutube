@@ -47,11 +47,20 @@ public:
             }
     
             if (!redirect.isEmpty()) {
+                reply->deleteLater();
+                reply = 0;
                 followRedirect(redirect);
             }
         }
+        
+        const QByteArray response = reply->readAll();
+        const QNetworkReply::NetworkError e = reply->error();
+        const QString es = reply->errorString();
+        const QUrl subtitlesUrl = reply->request().url();
+        reply->deleteLater();
+        reply = 0;
     
-        switch (reply->error()) {
+        switch (e) {
         case QNetworkReply::NoError:
             break;
         case QNetworkReply::OperationCanceledError:
@@ -62,14 +71,14 @@ public:
             return;
         default:
             setStatus(Request::Failed);
-            setError(Request::Error(reply->error()));
-            setErrorString(reply->errorString());
+            setError(Request::Error(e));
+            setErrorString(es);
             emit q->finished();
             return;
         }
         
         QDomDocument doc;
-        doc.setContent(reply->readAll());
+        doc.setContent(response);
         QDomElement transcriptEl = doc.documentElement();
         QDomNodeList trackNodes = transcriptEl.elementsByTagName("track");
         QVariantList subs;
@@ -81,11 +90,11 @@ public:
             QString code = trackEl.attribute("lang_code");
 #if QT_VERSION >= 0x050000
             QUrlQuery query(u);
-            query.addQueryItem("v", QUrlQuery(reply->request().url()).queryItemValue("v"));
+            query.addQueryItem("v", QUrlQuery(subtitlesUrl).queryItemValue("v"));
             query.addQueryItem("lang", code);
             u.setQuery(query);
 #else
-            u.addQueryItem("v", reply->request().url().queryItemValue("v"));
+            u.addQueryItem("v", subtitlesUrl.queryItemValue("v"));
             u.addQueryItem("lang", code);
 #endif
             sub["id"] = trackEl.attribute("id");

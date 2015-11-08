@@ -292,6 +292,9 @@ public:
     }
     
     void extractVideoStreams(QScriptValue decryptionFunction) {
+#ifdef QYOUTUBE_DEBUG
+        qDebug() << "QYouTube::StreamsRequestPrivate::extractVideoStreams: Extracting video streams.";
+#endif
         Q_Q(StreamsRequest);
         
         QVariantList formats;
@@ -355,7 +358,13 @@ public:
         
         Q_Q(StreamsRequest);
         
-        switch (reply->error()) {
+        response = reply->readAll();
+        const QNetworkReply::NetworkError e = reply->error();
+        const QString es = reply->errorString();
+        reply->deleteLater();
+        reply = 0;
+        
+        switch (e) {
         case QNetworkReply::NoError:
             break;
         case QNetworkReply::OperationCanceledError:
@@ -366,14 +375,12 @@ public:
             return;
         default:
             setStatus(StreamsRequest::Failed);
-            setError(StreamsRequest::Error(reply->error()));
-            setErrorString(reply->errorString());
+            setError(StreamsRequest::Error(e));
+            setErrorString(es);
             emit q->finished();
             return;
         }
-        
-        response = reply->readAll();
-        
+                
         if (!response.contains("url_encoded_fmt_stream_map=")) {
 #ifdef QYOUTUBE_DEBUG
             qDebug() << "QYouTube::StreamsRequestPrivate::_q_onVideoInfoLoaded: No format map in video info page. \
@@ -409,7 +416,13 @@ public:
         
         Q_Q(StreamsRequest);
         
-        switch (reply->error()) {
+        response = reply->readAll();
+        const QNetworkReply::NetworkError e = reply->error();
+        const QString es = reply->errorString();
+        reply->deleteLater();
+        reply = 0;
+        
+        switch (e) {
         case QNetworkReply::NoError:
             break;
         case QNetworkReply::OperationCanceledError:
@@ -420,14 +433,12 @@ public:
             return;
         default:
             setStatus(StreamsRequest::Failed);
-            setError(StreamsRequest::Error(reply->error()));
-            setErrorString(reply->errorString());
+            setError(StreamsRequest::Error(e));
+            setErrorString(es);
             emit q->finished();
             return;
         }
-        
-        response = reply->readAll();
-        
+                
         if (response.contains("url_encoded_fmt_stream_map\":")) {
             QString js = response.section("\"assets\":", 1, 1).section('}', 0, 0) + "}";
             response = response.section("url_encoded_fmt_stream_map\":\"", 1, 1).section(",\"", 0, 0)
@@ -474,7 +485,14 @@ public:
         
         Q_Q(StreamsRequest);
         
-        switch (reply->error()) {
+        const QString jsresponse(reply->readAll());
+        const QNetworkReply::NetworkError e = reply->error();
+        const QString es = reply->errorString();
+        const QUrl playerUrl = reply->request().url();
+        reply->deleteLater();
+        reply = 0;
+        
+        switch (e) {
         case QNetworkReply::NoError:
             break;
         case QNetworkReply::OperationCanceledError:
@@ -485,13 +503,12 @@ public:
             return;
         default:
             setStatus(StreamsRequest::Failed);
-            setError(StreamsRequest::Error(reply->error()));
-            setErrorString(reply->errorString());
+            setError(StreamsRequest::Error(e));
+            setErrorString(es);
             emit q->finished();
             return;
         }
         
-        QString jsresponse(reply->readAll());
         QRegExp re("\\.sig\\|\\|[\\w\\$]+(?=\\()");
         
         if (re.indexIn(jsresponse) != -1) {
@@ -509,7 +526,7 @@ public:
             QScriptValue decryptionFunction = global.property(funcName);
 
             if (decryptionFunction.isFunction()) {
-                decryptionCache[reply->request().url()] = decryptionFunction;
+                decryptionCache[playerUrl] = decryptionFunction;
                 extractVideoStreams(decryptionFunction);
                 return;
             }
