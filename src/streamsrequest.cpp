@@ -477,7 +477,34 @@ public:
         setErrorString(StreamsRequest::tr("No video streams found for %1").arg(id));
         emit q->finished();
     }
-    
+
+    static QString getJsObject(const QString &js, const QString &obj) {
+        QString rv;
+
+        int start = js.indexOf(QRegExp("var\\s" + QRegExp::escape(obj)));
+        int end = start;
+
+        if (start == -1)
+            return rv;
+
+        do {
+            end = js.indexOf("}", end);
+
+            if (end == -1) {
+                rv.clear();
+                break;
+            }
+
+            end ++;
+            rv  = js.mid(start, end - start);
+        } while (rv.count("{") != rv.count("}"));
+
+        if (start = rv.count("{"), start && start == rv.count("}"))
+            rv += ";";
+
+        return rv;
+    }
+
     void _q_onPlayerJSLoaded() {
         if (!reply) {
             return;
@@ -510,20 +537,44 @@ public:
         }
         
         QRegExp re("\\.sig\\|\\|[\\w\\$]+(?=\\()");
-        
-        if (re.indexIn(jsresponse) != -1) {
-            QString funcName = re.cap().section("||", -1);
-            QString var = jsresponse.section("function " + funcName, 0, 0).section(";var", -1);
-            QString funcBody = QString("function %2%3").arg(funcName).arg(jsresponse.section("function " + funcName, 1, 1)
-                                                                                    .section(";function", 0, 0));
-            QString js = QString("var%1 %2").arg(var).arg(funcBody);
-#ifdef QYOUTUBE_DEBUG
-            qDebug() << "QYouTube::StreamsRequestPrivate::_q_onPlayerJSLoaded: Found decryption function " << js;
-#endif
-            decryptionEngine->evaluate(js);
 
+        if (re.indexIn(jsresponse) != -1) {
+            QString funcName = re.cap().section("||", -1).trimmed();
+            QString script;
+            re = QRegExp();
+#ifdef QYOUTUBE_DEBUG
+            qDebug() << "QYouTube::StreamsRequestPrivate::_q_onPlayerJSLoaded: Found decryption function " << funcName;
+#endif
             QScriptValue global = decryptionEngine->globalObject();
-            QScriptValue decryptionFunction = global.property(funcName);
+            QScriptValue decryptionFunction;
+            QString objName = funcName;
+
+            do {
+                QString s = getJsObject(jsresponse, objName);
+
+                if (s.isEmpty())
+                    break;
+
+                script = s + script;
+                decryptionEngine->evaluate(script);
+                decryptionFunction = global.property(funcName);
+
+                if (!decryptionFunction.isFunction())
+                    break;
+
+                decryptionFunction.call(QScriptValue(),
+                                        QScriptValueList() << "");
+
+                if (decryptionEngine->hasUncaughtException()) {
+                    QString e =
+                            decryptionEngine->uncaughtException().toString();
+
+                    if (e.startsWith("ReferenceError: Can't find variable:"))
+                        objName = e.section(":", -1, -1).trimmed();
+                    else
+                        break;
+                }
+            } while (decryptionEngine->hasUncaughtException());
 
             if (decryptionFunction.isFunction()) {
                 decryptionCache[playerUrl] = decryptionFunction;
@@ -633,6 +684,10 @@ StreamsRequest::StreamsRequest(QObject *parent) :
     \brief Requests a list of streams for the video identified by id.
 */
 void StreamsRequest::list(const QString &id) {
+    if (status() == Loading) {
+        return;
+    }
+    
     Q_D(StreamsRequest);
     
     d->id = id;

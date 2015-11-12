@@ -213,6 +213,10 @@ void AuthenticationRequest::setScopes(const QStringList &scopes) {
     flow</a>. The code is retrieved from the title of the web page.
 */
 void AuthenticationRequest::exchangeCodeForAccessToken(const QString &code) {
+    if (status() == Loading) {
+        return;
+    }
+    
     Q_D(AuthenticationRequest);
     d->authRequest = AuthenticationRequestPrivate::WebToken;
     setUrl(QUrl(TOKEN_URL));
@@ -263,6 +267,10 @@ void AuthenticationRequest::exchangeCodeForAccessToken(const QString &code) {
     </table>
 */
 void AuthenticationRequest::requestAuthorizationCode() {
+    if (status() == Loading) {
+        return;
+    }
+    
     Q_D(AuthenticationRequest);
     d->authRequest = AuthenticationRequestPrivate::DeviceCode;
     setUrl(QUrl(DEVICE_CODE_URL));
@@ -274,6 +282,10 @@ void AuthenticationRequest::requestAuthorizationCode() {
     \brief Revokes YouTube Data API access for the current access token.
 */
 void AuthenticationRequest::revokeAccessToken() {
+    if (status() == Loading) {
+        return;
+    }
+    
     Q_D(AuthenticationRequest);
     d->authRequest = AuthenticationRequestPrivate::RevokeToken;
     QUrl u(REVOKE_TOKEN_URL);

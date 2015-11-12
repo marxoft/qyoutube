@@ -183,6 +183,10 @@ SubtitlesRequest::SubtitlesRequest(QObject *parent) :
     \brief Requests a list of subtitles for the video identified by id.
 */
 void SubtitlesRequest::list(const QString &id) {    
+    if (status() == Loading) {
+        return;
+    }
+    
     QUrl u(SUBTITLES_URL);
 #if QT_VERSION >= 0x050000
     QUrlQuery query(u);
