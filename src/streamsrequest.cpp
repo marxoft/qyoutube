@@ -633,6 +633,10 @@ StreamsRequest::StreamsRequest(QObject *parent) :
     \brief Requests a list of streams for the video identified by id.
 */
 void StreamsRequest::list(const QString &id) {
+    if (status() == Loading) {
+        return;
+    }
+    
     Q_D(StreamsRequest);
     
     d->id = id;

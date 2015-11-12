@@ -109,6 +109,10 @@ ResourcesRequest::ResourcesRequest(QObject *parent) :
 */
 void ResourcesRequest::list(const QString &resourcePath, const QStringList &part, const QVariantMap &filters,
                             const QVariantMap &params) {
+    if (status() == Loading) {
+        return;
+    }
+    
     QUrl u(QString("%1%2%3").arg(API_URL).arg(resourcePath.startsWith("/") ? QString() : QString("/"))
                             .arg(resourcePath));
 #if QT_VERSION >= 0x050000
@@ -160,6 +164,10 @@ void ResourcesRequest::list(const QString &resourcePath, const QStringList &part
 */
 void ResourcesRequest::insert(const QVariantMap &resource, const QString &resourcePath, const QStringList &part,
                               const QVariantMap &params) {
+    if (status() == Loading) {
+        return;
+    }
+    
     QUrl u(QString("%1%2%3").arg(API_URL).arg(resourcePath.startsWith("/") ? QString() : QString("/"))
                             .arg(resourcePath));
 #if QT_VERSION >= 0x050000
@@ -200,6 +208,10 @@ void ResourcesRequest::insert(const QVariantMap &resource, const QString &resour
     \endcode
 */
 void ResourcesRequest::update(const QString &resourcePath, const QVariantMap &resource, const QStringList &part) {
+    if (status() == Loading) {
+        return;
+    }
+    
     QUrl u(QString("%1%2%3").arg(API_URL).arg(resourcePath.startsWith("/") ? QString() : QString("/"))
                             .arg(resourcePath));
 #if QT_VERSION >= 0x050000
@@ -225,6 +237,10 @@ void ResourcesRequest::update(const QString &resourcePath, const QVariantMap &re
     \endcode
 */
 void ResourcesRequest::del(const QString &id, const QString &resourcePath) {
+    if (status() == Loading) {
+        return;
+    }
+    
     QUrl u(QString("%1%2%3").arg(API_URL).arg(resourcePath.startsWith("/") ? QString() : QString("/"))
                             .arg(resourcePath));
 #if QT_VERSION >= 0x050000
