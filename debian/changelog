@@ -1,3 +1,10 @@
+qyoutube (0.1.7) unstable; urgency=low
+
+  * Fix signature decryption for video streams.
+  * Prevent further network requests when status is Loading.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Thu, 12 Nov 2015 15:04:43 +0000
+
 qyoutube (0.1.6) unstable; urgency=low
 
   * Fix possible segfault when retrieving video streams.
