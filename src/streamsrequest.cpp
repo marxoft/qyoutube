@@ -482,10 +482,15 @@ public:
         QString rv;
 
         int start = js.indexOf(QRegExp("var\\s" + QRegExp::escape(obj)));
-        int end = start;
+        int end;
+
+        if (start == -1)
+            start = js.indexOf(QRegExp(QRegExp::escape(obj) + " *= *function"));
 
         if (start == -1)
             return rv;
+
+        end = start;
 
         do {
             end = js.indexOf("}", end);
