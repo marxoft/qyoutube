@@ -1,3 +1,15 @@
+qyoutube (0.1.9) unstable; urgency=low
+
+  * Refresh access token during revoke operation, if required.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Sat, 23 Jul 2016 15:35:51 +0000
+
+qyoutube (0.1.8) unstable; urgency=low
+
+  * Fix signature decryption for video streams. Thanks to freemangordon for the patch.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Mon, 21 Mar 2016 18:07:21 +0000
+
 qyoutube (0.1.7) unstable; urgency=low
 
   * Fix signature decryption for video streams.
