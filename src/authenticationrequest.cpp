@@ -53,6 +53,63 @@ public:
         q->post();
     }
     
+    void _q_onAccessTokenRefreshed() {
+        if (!reply) {
+            return;
+        }
+        
+        Q_Q(AuthenticationRequest);
+        
+        bool ok;
+        setResult(QtJson::Json::parse(reply->readAll(), ok));
+        
+        const QNetworkReply::NetworkError e = reply->error();
+        const QString es = reply->errorString();
+        reply->deleteLater();
+        reply = 0;
+        
+        switch (e) {
+        case QNetworkReply::NoError:
+            break;
+        case QNetworkReply::OperationCanceledError:
+            setStatus(Request::Canceled);
+            setError(Request::NoError);
+            setErrorString(QString());
+            emit q->finished();
+            return;
+        default:
+            setStatus(Request::Failed);
+            setError(Request::Error(e));
+            setErrorString(es);
+            emit q->finished();
+            return;
+        }
+        
+        if (ok) {
+            const QString token = result.toMap().value("access_token").toString();
+            
+            if (token.isEmpty()) {
+                setStatus(Request::Failed);
+                setError(Request::ContentAccessDenied);
+                setErrorString(Request::tr("Unable to refresh access token"));
+                emit q->finished();
+            }
+            else {
+                q->setAccessToken(token);
+                
+                if (authRequest == RevokeToken) {
+                    q->revokeAccessToken();
+                }
+            }
+        }
+        else {
+            setStatus(Request::Failed);
+            setError(Request::ParseError);
+            setErrorString(Request::tr("Unable to parse response"));
+            emit q->finished();
+        }
+    }
+    
     void _q_onReplyFinished() {
         if (!reply) {
             return;
@@ -77,6 +134,18 @@ public:
             setErrorString(QString());
             emit q->finished();
             return;
+        case QNetworkReply::AuthenticationRequiredError:
+            if ((authRequest == RevokeToken) && (!refreshToken.isEmpty())) {
+                refreshAccessToken();
+            }
+            else {
+                setStatus(Request::Failed);
+                setError(Request::Error(e));
+                setErrorString(es);
+                emit q->finished();
+            }
+            
+            return;
         default:
             setStatus(Request::Failed);
             setError(Request::Error(e));
@@ -86,7 +155,7 @@ public:
         }
     
         if (ok) {
-            QVariantMap map = result.toMap();
+            const QVariantMap map = result.toMap();
             
             switch (authRequest) {
             case WebToken:
@@ -101,7 +170,7 @@ public:
                     setErrorString(QString());
                 }
                 else {
-                    QString es = map.value("error").toString();
+                    const QString es = map.value("error").toString();
                 
                     if (deviceExpiryTime.elapsed() < deviceExpiry) {
                         if (es == "authorization_pending") {
@@ -124,8 +193,8 @@ public:
                 break;
             case DeviceCode:
                 if (!map.value("device_code").isNull()) {
-                    int expiry = map.value("expires_in").toInt();
-                    int interval = map.value("interval").toInt();
+                    const int expiry = map.value("expires_in").toInt();
+                    const int interval = map.value("interval").toInt();
                     deviceCode = map.value("device_code").toString();
                     deviceExpiry = (expiry > 0 ? expiry * 1000 : 60000);
                     deviceInterval = (interval > 0 ? interval * 1100 : 5000);

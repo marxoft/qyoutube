@@ -870,13 +870,12 @@ void RequestPrivate::followRedirect(const QUrl &redirect) {
 void RequestPrivate::refreshAccessToken() {
     Q_Q(Request);
     
-    QUrl tokenUrl(TOKEN_URL);
-    QNetworkRequest request(tokenUrl);
+    QNetworkRequest request(TOKEN_URL);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    QByteArray body("client_id=" + clientId.toUtf8() +
-                    "&client_secret=" + clientSecret.toUtf8() +
-                    "&refresh_token=" + refreshToken.toUtf8() +
-                    "&grant_type=refresh_token");
+    const QByteArray body("client_id=" + clientId.toUtf8() +
+                          "&client_secret=" + clientSecret.toUtf8() +
+                          "&refresh_token=" + refreshToken.toUtf8() +
+                          "&grant_type=refresh_token");
                     
     if (reply) {
         delete reply;
@@ -919,7 +918,7 @@ void RequestPrivate::_q_onAccessTokenRefreshed() {
     }
         
     if (ok) {
-        QString token = result.toMap().value("access_token").toString();
+        const QString token = result.toMap().value("access_token").toString();
         
         if (token.isEmpty()) {
             setStatus(Request::Failed);
@@ -964,10 +963,10 @@ void RequestPrivate::_q_onReplyFinished() {
     Q_Q(Request);
     
     if (redirects < MAX_REDIRECTS) {
-        QUrl redirect = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+        QUrl redirect = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
     
         if (redirect.isEmpty()) {
-            redirect = reply->header(QNetworkRequest::LocationHeader).toUrl();
+            redirect = reply->header(QNetworkRequest::LocationHeader).toString();
         }
     
         if (!redirect.isEmpty()) {

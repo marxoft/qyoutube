@@ -150,7 +150,7 @@ public:
     virtual void followRedirect(const QUrl &redirect);
         
     void refreshAccessToken();
-    void _q_onAccessTokenRefreshed();
+    virtual void _q_onAccessTokenRefreshed();
     
     virtual void _q_onReplyFinished();
     
