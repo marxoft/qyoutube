@@ -66,6 +66,8 @@ public:
         insert("44", Format("44", "WebM audio/video", "webm", 854, 480));
         insert("45", Format("45", "WebM audio/video", "webm", 1280, 720));
         insert("46", Format("46", "WebM audio/video", "webm", 1920, 1080));
+        insert("59", Format("59", "MP4 audio/video", "mp4", 854, 480));
+        insert("78", Format("78", "MP4 audio/video", "mp4", 854, 480));
         insert("82", Format("82", "MP4 3D audio/video", "mp4", 640, 360));
         insert("83", Format("83", "MP4 3D audio/video", "mp4", 854, 480));
         insert("84", Format("84", "MP4 3D audio/video", "mp4", 1280, 720));
@@ -256,7 +258,7 @@ public:
 #if QT_VERSION >= 0x050000
                 QUrlQuery query(url);
 
-                foreach (QString param, params) {
+                foreach (const QString &param, params) {
                     query.addQueryItem(param.section('=', 0, 0), param.section('=', -1));
                 }
 
@@ -269,7 +271,7 @@ public:
                 Format format = formatHash.value(query.queryItemValue("itag"));
                 format["url"] = url;
 #else
-                foreach (QString param, params) {
+                foreach (const QString &param, params) {
                     url.addQueryItem(param.section('=', 0, 0), param.section('=', -1));
                 }
 
@@ -316,7 +318,7 @@ public:
 #if QT_VERSION >= 0x050000
                 QUrlQuery query(url);
 
-                foreach (QString param, params) {
+                foreach (const QString &param, params) {
                     query.addQueryItem(param.section('=', 0, 0), param.section('=', -1));
                 }
 
@@ -329,7 +331,7 @@ public:
                 Format format = formatHash.value(query.queryItemValue("itag"));
                 format["url"] = url;
 #else
-                foreach (QString param, params) {
+                foreach (const QString &param, params) {
                     url.addQueryItem(param.section('=', 0, 0), param.section('=', -1));
                 }
 
@@ -450,14 +452,12 @@ public:
             }
             else {        
                 bool ok;
-                QVariant assets = QtJson::Json::parse(js, ok);
+                const QVariant assets = QtJson::Json::parse(js, ok);
                 
                 if (ok) {
-                    QUrl playerUrl = assets.toMap().value("js").toUrl();
-
-                    if (playerUrl.scheme().isEmpty()) {
-                        playerUrl.setScheme("http");
-                    }
+                    QUrl playerUrl = assets.toMap().value("js").toString();
+                    playerUrl.setScheme("https");
+                    playerUrl.setHost("www.youtube.com");
 
                     if (playerUrl.isValid()) {
                         QScriptValue decryptionFunction = getDecryptionFunction(playerUrl);
@@ -484,11 +484,13 @@ public:
         int start = js.indexOf(QRegExp("var\\s" + QRegExp::escape(obj)));
         int end;
 
-        if (start == -1)
+        if (start == -1) {
             start = js.indexOf(QRegExp(QRegExp::escape(obj) + " *= *function"));
+        }
 
-        if (start == -1)
+        if (start == -1) {
             return rv;
+        }
 
         end = start;
 
@@ -504,8 +506,9 @@ public:
             rv  = js.mid(start, end - start);
         } while (rv.count("{") != rv.count("}"));
 
-        if (start = rv.count("{"), start && start == rv.count("}"))
+        if (start = rv.count("{"), start && start == rv.count("}")) {
             rv += ";";
+        }
 
         return rv;
     }
@@ -541,10 +544,10 @@ public:
             return;
         }
         
-        QRegExp re("\\.sig\\|\\|[\\w\\$]+(?=\\()");
+        QRegExp re("[\"']signature[\"'],(\\$[^\\(]+)");
 
         if (re.indexIn(jsresponse) != -1) {
-            QString funcName = re.cap().section("||", -1).trimmed();
+            QString funcName = re.cap(1);
             QString script;
             re = QRegExp();
 #ifdef QYOUTUBE_DEBUG
@@ -557,27 +560,29 @@ public:
             do {
                 QString s = getJsObject(jsresponse, objName);
 
-                if (s.isEmpty())
+                if (s.isEmpty()) {
                     break;
+                }
 
                 script = s + script;
                 decryptionEngine->evaluate(script);
                 decryptionFunction = global.property(funcName);
 
-                if (!decryptionFunction.isFunction())
+                if (!decryptionFunction.isFunction()) {
                     break;
+                }
 
-                decryptionFunction.call(QScriptValue(),
-                                        QScriptValueList() << "");
+                decryptionFunction.call(QScriptValue(), QScriptValueList() << "");
 
                 if (decryptionEngine->hasUncaughtException()) {
-                    QString e =
-                            decryptionEngine->uncaughtException().toString();
+                    QString e = decryptionEngine->uncaughtException().toString();
 
-                    if (e.startsWith("ReferenceError: Can't find variable:"))
+                    if (e.startsWith("ReferenceError: Can't find variable:")) {
                         objName = e.section(":", -1, -1).trimmed();
-                    else
+                    }
+                    else {
                         break;
+                    }
                 }
             } while (decryptionEngine->hasUncaughtException());
 
