@@ -544,7 +544,7 @@ public:
             return;
         }
         
-        QRegExp re("[\"']signature[\"'],(\\$[^\\(]+)");
+        QRegExp re("[\"]signature[\"],([^\\(]+)");
 
         if (re.indexIn(jsresponse) != -1) {
             QString funcName = re.cap(1);
