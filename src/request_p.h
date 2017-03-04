@@ -131,9 +131,7 @@ class RequestPrivate
 public:
     RequestPrivate(Request *parent);
     virtual ~RequestPrivate();
-    
-    QNetworkAccessManager* networkAccessManager();
-    
+
     void setOperation(Request::Operation op);
     
     void setStatus(Request::Status s);
@@ -157,8 +155,6 @@ public:
     Request *q_ptr;
     
     QNetworkAccessManager *manager;
-    
-    QNetworkReply *reply;
     
     bool ownNetworkAccessManager;
     
@@ -186,7 +182,21 @@ public:
     
     int redirects;
     
+    void appendReply(QNetworkReply *reply);
+    void deleteReply(QNetworkReply *reply);
+    void removeAllReplies();
+    QNetworkReply *head(bool authRequired);
+    QNetworkReply *get(bool authRequired);
+    QNetworkReply *get(QNetworkRequest request);
+    QNetworkReply *post(bool authRequired, const QByteArray &data);
+    QNetworkReply *put(bool authRequired, const QByteArray &data);
+    QNetworkReply *deleteResource(bool authRequired);
+
     Q_DECLARE_PUBLIC(Request)
+
+private:
+    QList<QNetworkReply *>replies;
+    QNetworkAccessManager* networkAccessManager();
 };
 
 }

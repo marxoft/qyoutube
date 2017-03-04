@@ -111,19 +111,15 @@ public:
     }
     
     void _q_onReplyFinished() {
-        if (!reply) {
-            return;
-        }
-    
         Q_Q(AuthenticationRequest);
-    
+        QNetworkReply *reply = qobject_cast<QNetworkReply *>(q->sender());
         bool ok;
+
         setResult(QtJson::Json::parse(reply->readAll(), ok));
-        
+
         const QNetworkReply::NetworkError e = reply->error();
         const QString es = reply->errorString();
-        reply->deleteLater();
-        reply = 0;
+        deleteReply(reply);
     
         switch (e) {
         case QNetworkReply::NoError:

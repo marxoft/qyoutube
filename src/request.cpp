@@ -45,11 +45,8 @@ Request::Request(RequestPrivate &dd, QObject *parent) :
 
 Request::~Request() {
     Q_D(Request);
-    
-    if (d->reply) {
-        delete d->reply;
-        d->reply = 0;
-    }
+
+    d->removeAllReplies();
 }
 
 /*!
@@ -563,14 +560,11 @@ void Request::head(bool authRequired) {
     d->setOperation(HeadOperation);
     d->setStatus(Loading);
     
-    if (d->reply) {
-        delete d->reply;
-    }
 #ifdef QYOUTUBE_DEBUG
     qDebug() << "QYouTube::Request::head" << d->url;
 #endif
-    d->reply = d->networkAccessManager()->head(d->buildRequest(authRequired));
-    connect(d->reply, SIGNAL(finished()), this, SLOT(_q_onReplyFinished()));
+    connect(d->head(authRequired), SIGNAL(finished()),
+            this, SLOT(_q_onReplyFinished()));
 }
 
 /*!
@@ -588,14 +582,11 @@ void Request::get(bool authRequired) {
     d->setOperation(GetOperation);
     d->setStatus(Loading);
     
-    if (d->reply) {
-        delete d->reply;
-    }
 #ifdef QYOUTUBE_DEBUG
     qDebug() << "QYouTube::Request::get" << d->url;
 #endif
-    d->reply = d->networkAccessManager()->get(d->buildRequest(authRequired));
-    connect(d->reply, SIGNAL(finished()), this, SLOT(_q_onReplyFinished()));
+    connect(d->get(authRequired), SIGNAL(finished()),
+            this, SLOT(_q_onReplyFinished()));
 }
 
 /*!
@@ -611,10 +602,6 @@ void Request::post(bool authRequired) {
     
     d->redirects = 0;
     d->setOperation(PostOperation);
-    
-    if (d->reply) {
-        delete d->reply;
-    }
     
     bool ok = true;
     QByteArray data;
@@ -634,8 +621,8 @@ void Request::post(bool authRequired) {
 #endif
     if (ok) {
         d->setStatus(Loading);        
-        d->reply = d->networkAccessManager()->post(d->buildRequest(authRequired), data);
-        connect(d->reply, SIGNAL(finished()), this, SLOT(_q_onReplyFinished()));
+        connect(d->post(authRequired, data), SIGNAL(finished()),
+                this, SLOT(_q_onReplyFinished()));
     }
     else {
         d->setStatus(Failed);
@@ -659,10 +646,6 @@ void Request::put(bool authRequired) {
     d->redirects = 0;
     d->setOperation(PutOperation);
     
-    if (d->reply) {
-        delete d->reply;
-    }
-    
     bool ok = true;
     QByteArray data;
     
@@ -681,8 +664,8 @@ void Request::put(bool authRequired) {
 #endif
     if (ok) {
         d->setStatus(Loading);        
-        d->reply = d->networkAccessManager()->put(d->buildRequest(authRequired), data);
-        connect(d->reply, SIGNAL(finished()), this, SLOT(_q_onReplyFinished()));
+        connect(d->put(authRequired, data), SIGNAL(finished()),
+                this, SLOT(_q_onReplyFinished()));
     }
     else {
         d->setStatus(Failed);
@@ -706,15 +689,11 @@ void Request::deleteResource(bool authRequired) {
     d->redirects = 0;
     d->setOperation(DeleteOperation);
     d->setStatus(Loading);
-    
-    if (d->reply) {
-        delete d->reply;
-    }
 #ifdef QYOUTUBE_DEBUG
     qDebug() << "QYouTube::Request::deleteResource" << d->url;
 #endif
-    d->reply = d->networkAccessManager()->deleteResource(d->buildRequest(authRequired));
-    connect(d->reply, SIGNAL(finished()), this, SLOT(_q_onReplyFinished()));
+    connect(d->deleteResource(authRequired), SIGNAL(finished()),
+            this, SLOT(_q_onReplyFinished()));
 }
 
 /*!
@@ -723,15 +702,12 @@ void Request::deleteResource(bool authRequired) {
 void Request::cancel() {
     Q_D(Request);
     
-    if (d->reply) {
-        d->reply->abort();
-    }
+    d->removeAllReplies();
 }
 
 RequestPrivate::RequestPrivate(Request *parent) :
     q_ptr(parent),
     manager(0),
-    reply(0),
     ownNetworkAccessManager(false),
     operation(Request::UnknownOperation),
     status(Request::Null),
@@ -742,7 +718,7 @@ RequestPrivate::RequestPrivate(Request *parent) :
 
 RequestPrivate::~RequestPrivate() {}
 
-QNetworkAccessManager* RequestPrivate::networkAccessManager() {    
+QNetworkAccessManager* RequestPrivate::networkAccessManager() {
     if (!manager) {
         Q_Q(Request);
         ownNetworkAccessManager = true;
@@ -859,11 +835,8 @@ void RequestPrivate::followRedirect(const QUrl &redirect) {
     
     redirects++;
     
-    if (reply) {
-        delete reply;
-    }
-        
-    reply = networkAccessManager()->get(buildRequest(redirect));
+    QNetworkReply *reply = networkAccessManager()->get(buildRequest(redirect));
+    replies.append(reply);
     Request::connect(reply, SIGNAL(finished()), q, SLOT(_q_onReplyFinished()));
 }
 
@@ -877,29 +850,23 @@ void RequestPrivate::refreshAccessToken() {
                           "&refresh_token=" + refreshToken.toUtf8() +
                           "&grant_type=refresh_token");
                     
-    if (reply) {
-        delete reply;
-    }
     
-    reply = networkAccessManager()->post(request, body);
+    QNetworkReply *reply = networkAccessManager()->post(request, body);
+    replies.append(reply);
     Request::connect(reply, SIGNAL(finished()), q, SLOT(_q_onAccessTokenRefreshed()));
 }
 
 void RequestPrivate::_q_onAccessTokenRefreshed() {
-    if (!reply) {
-        return;
-    }
-    
+
     Q_Q(Request);
-        
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(q->sender());
     bool ok;
     setResult(QtJson::Json::parse(reply->readAll(), ok));
     
     const QNetworkReply::NetworkError e = reply->error();
     const QString es = reply->errorString();
-    reply->deleteLater();
-    reply = 0;
-    
+    deleteReply(reply);
+
     switch (e) {
     case QNetworkReply::NoError:
         break;
@@ -956,12 +923,9 @@ void RequestPrivate::_q_onAccessTokenRefreshed() {
 }
 
 void RequestPrivate::_q_onReplyFinished() {
-    if (!reply) {
-        return;
-    }
-    
     Q_Q(Request);
-    
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(q->sender());
+
     if (redirects < MAX_REDIRECTS) {
         QUrl redirect = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
     
@@ -970,8 +934,7 @@ void RequestPrivate::_q_onReplyFinished() {
         }
     
         if (!redirect.isEmpty()) {
-            reply->deleteLater();
-            reply = 0;
+            deleteReply(reply);
             followRedirect(redirect);
             return;
         }
@@ -983,8 +946,7 @@ void RequestPrivate::_q_onReplyFinished() {
     
     const QNetworkReply::NetworkError e = reply->error();
     const QString es = reply->errorString();
-    reply->deleteLater();
-    reply = 0;
+    deleteReply(reply);
     
     switch (e) {
     case QNetworkReply::NoError:
@@ -1027,6 +989,81 @@ void RequestPrivate::_q_onReplyFinished() {
     }
         
     emit q->finished();
+}
+
+void RequestPrivate::appendReply(QNetworkReply *reply)
+{
+    replies.append(reply);
+}
+
+void RequestPrivate::deleteReply(QNetworkReply *reply)
+{
+    replies.removeOne(reply);
+    reply->deleteLater();
+}
+
+void RequestPrivate::removeAllReplies()
+{
+    for (int i = 0; i < replies.size(); i ++)
+    {
+        QNetworkReply *reply = replies.at(i);
+
+        reply->abort();
+        reply->deleteLater();
+    }
+
+    replies.clear();
+}
+
+QNetworkReply *RequestPrivate::head(bool authRequired)
+{
+    QNetworkReply *rv =
+            networkAccessManager()->head(buildRequest(authRequired));
+    replies.append(rv);
+
+    return rv;
+}
+
+QNetworkReply *RequestPrivate::get(bool authRequired)
+{
+    return get(buildRequest(authRequired));
+}
+
+QNetworkReply *RequestPrivate::get(QNetworkRequest request)
+{
+    QNetworkReply *rv =
+            networkAccessManager()->get(request);
+    replies.append(rv);
+
+    return rv;
+}
+
+QNetworkReply *RequestPrivate::post(bool authRequired, const QByteArray &data)
+{
+    QNetworkReply *rv =
+            networkAccessManager()->post(buildRequest(authRequired), data);
+    replies.append(rv);
+
+    return rv;
+}
+
+QNetworkReply *RequestPrivate::put(bool authRequired, const QByteArray &data)
+{
+    QNetworkReply *rv =
+            networkAccessManager()->put(buildRequest(authRequired), data);
+    replies.append(rv);
+
+    return rv;
+}
+
+QNetworkReply *RequestPrivate::deleteResource(bool authRequired)
+{
+    QNetworkReply *rv =
+            networkAccessManager()->deleteResource(buildRequest(authRequired));
+    replies.append(rv);
+
+    return rv;
+
 }
 
 }
