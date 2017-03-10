@@ -543,11 +543,11 @@ public:
             emit q->finished();
             return;
         }
-        
-        QRegExp re("[\"]signature[\"],([^\\(]+)");
+
+        QRegExp re("[\"]signature[\"]\\s*,\\s*((\\w+)\\s*\\()");
 
         if (re.indexIn(jsresponse) != -1) {
-            QString funcName = re.cap(1);
+            QString funcName = re.cap(2);
             QString script;
             re = QRegExp();
 #ifdef QYOUTUBE_DEBUG
