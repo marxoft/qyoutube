@@ -1,3 +1,9 @@
+qyoutube (0.1.9-1) unstable; urgency=low
+
+  * Fix for the latest base.js changes
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Fri, 30 Aug 2019 20:40:11 +0300
+
 qyoutube (0.1.9) unstable; urgency=low
 
   * Refresh access token during revoke operation, if required.
