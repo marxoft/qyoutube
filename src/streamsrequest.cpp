@@ -296,17 +296,36 @@ public:
     void extractVideoStreams(QScriptValue decryptionFunction) {
 #ifdef QYOUTUBE_DEBUG
         qDebug() << "QYouTube::StreamsRequestPrivate::extractVideoStreams: Extracting video streams.";
+        qDebug() << "QYouTube::StreamsRequestPrivate::extractVideoStreams: decryptFunction" << decryptionFunction.toString();
 #endif
         Q_Q(StreamsRequest);
-        
+
         QVariantList formats;
+
         QStringList parts = response.split(',', QString::SkipEmptyParts);
-        
+
         foreach (QString part, parts) {
             part = unescape(part);
-            part.replace(QRegExp("(^|&)s="), "&signature=");
-            QString oldSig = part.section("signature=", 1, 1).section('&', 0, 0);
+            QRegExp r("sp=(.*)&|sp=(.*)$");
+            QString sp;
+
+            r.setMinimal(true);
+
+            if (r.indexIn(part) != -1)
+            {
+              if (!r.cap(1).isEmpty())
+                sp = r.cap(1);
+              else
+                sp = r.cap(2);
+            }
+            else
+              sp = "signature";
+
+            part.replace(QRegExp("(^|&)s="), "&" + sp + "=");
+            QString oldSig = part.section(sp + "=", 1, 1).section('&', 0, 0);
+
             part.replace(oldSig, decryptionFunction.call(QScriptValue(), QScriptValueList() << oldSig).toString());
+
             QStringList splitPart = part.split("url=");
 
             if (!splitPart.isEmpty()) {
@@ -322,8 +341,8 @@ public:
                     query.addQueryItem(param.section('=', 0, 0), param.section('=', -1));
                 }
 
-                if (!query.hasQueryItem("signature")) {
-                    query.addQueryItem("signature", splitPart.first().section("signature=", 1, 1).section('&', 0, 0));
+                if (!query.hasQueryItem(sp)) {
+                  query.addQueryItem(sp, splitPart.first().section(sp + "=", 1, 1).section('&', 0, 0));
                 }
 
                 url.setQuery(query);
@@ -332,16 +351,17 @@ public:
                 format["url"] = url;
 #else
                 foreach (const QString &param, params) {
-                    url.addQueryItem(param.section('=', 0, 0), param.section('=', -1));
+                    url.addQueryItem(param.section('=', 0, 0), param.section('=', 1));
                 }
 
-                if (!url.hasQueryItem("signature")) {
-                    url.addQueryItem("signature", splitPart.first().section("signature=", 1, 1).section('&', 0, 0));
+                if (!url.hasQueryItem(sp)) {
+                    url.addQueryItem(sp, splitPart.first().section(sp + "=", 1, 1).section('&', 0, 0));
                 }
 
                 Format format = formatHash.value(url.queryItemValue("itag"));
                 format["url"] = url;
 #endif
+
                 formats << format;
             }
         }
@@ -443,7 +463,7 @@ public:
                 
         if (response.contains("url_encoded_fmt_stream_map\":")) {
             QString js = response.section("\"assets\":", 1, 1).section('}', 0, 0) + "}";
-            response = response.section("url_encoded_fmt_stream_map\":\"", 1, 1).section(",\"", 0, 0)
+            response = response.section("url_encoded_fmt_stream_map\":\"", 1, 1).section("\",\"", 0, 0)
                                                                                 .trimmed().replace("\\u0026", "&")
                                                                                 .remove(QRegExp("itag=\\d+"));
         
@@ -543,8 +563,8 @@ public:
             emit q->finished();
             return;
         }
-        
-        QRegExp re("[\"']signature[\"'],(\\$[^\\(]+)");
+
+        QRegExp re("\\b[cs]\\s*&&\\s*[adf]\\.set\\([^,]+\\s*,\\s*encodeURIComponent\\s*\\(\\s*([a-zA-Z0-9$]+)\\(");
 
         if (re.indexIn(jsresponse) != -1) {
             QString funcName = re.cap(1);
